@@ -1,7 +1,6 @@
 #include "FileReader.hpp"
 
-FileReader::FileReader(std::unique_ptr<std::istream> stream, FileOffset offset,
-                       BlockSize block_size)
+FileReader::FileReader(std::unique_ptr<std::istream> stream, FileOffset offset, BlockSize block_size)
     : FileHandler(offset, block_size), is_(std::move(stream)) {}
 
 auto FileReader::read_block() const -> std::vector<std::byte> {

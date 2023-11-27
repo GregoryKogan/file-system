@@ -7,7 +7,7 @@ class FileHandler {
   std::uint32_t block_size_;
   std::uint32_t handled_size_ = 0;
 
- public:
+public:
   struct FileOffset {
     std::uint32_t value;
   };
@@ -25,6 +25,6 @@ class FileHandler {
   void set_offset(FileOffset offset) noexcept;
   void set_block_size(BlockSize block_size) noexcept;
 
- protected:
+protected:
   void increase_handled_size(std::uint32_t size) noexcept;
 };

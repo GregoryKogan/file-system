@@ -11,4 +11,6 @@ add_executable(
     src/file_io/FileHandler.cpp
     src/file_io/FileReader/FileReader.hpp
     src/file_io/FileReader/FileReader.cpp
+    src/file_io/FileWriter/FileWriter.hpp
+    src/file_io/FileWriter/FileWriter.cpp
 )
