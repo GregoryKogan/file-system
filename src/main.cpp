@@ -2,26 +2,26 @@
 #include <iostream>
 #include <utility>
 
-#include "Reader/Reader.hpp"
+#include "file_io/FileReader/FileReader.hpp"
 
 auto main() -> int {
   auto ifs = std::make_unique<std::ifstream>("../src/assets/AnimeGirls.jpg",
                                              std::ios::binary);
 
   const std::uint32_t BLOCK_SIZE = 100;
-  Reader reader(std::move(ifs), FileOffset{0}, ReadBlockSize{BLOCK_SIZE});
+  FileReader reader(std::move(ifs), FileHandler::FileOffset{0},
+                    FileHandler::BlockSize{BLOCK_SIZE});
 
   while (true) {
     auto block = reader.read_next_block();
-    for (auto byte : block) {
-      std::cout << static_cast<uint>(byte) << " ";
-    }
+
+    for (auto byte : block) std::cout << static_cast<uint>(byte) << " ";
     std::cout << "\n";
 
-    if (block.size() < reader.block_size().value) break;
+    if (block.size() < reader.block_size()) break;
   }
 
-  std::cout << "total read size: " << reader.read_size() << "\n";
+  std::cout << "total read size: " << reader.handled_size() << "\n";
 
   return 0;
 }

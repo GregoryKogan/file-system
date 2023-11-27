@@ -7,6 +7,8 @@ add_executable(
     fs 
     src/main.cpp
 
-    src/Reader/Reader.hpp
-    src/Reader/Reader.cpp
+    src/file_io/FileHandler.hpp
+    src/file_io/FileHandler.cpp
+    src/file_io/FileReader/FileReader.hpp
+    src/file_io/FileReader/FileReader.cpp
 )
