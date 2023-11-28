@@ -3,28 +3,25 @@
 #include <utility>
 
 class FileHandler {
-  std::uint32_t offset_;
-  std::uint32_t block_size_;
-  std::uint32_t handled_size_ = 0;
+  std::uint64_t offset_;
+  std::uint64_t handled_size_ = 0;
 
 public:
-  struct FileOffset {
-    std::uint32_t value;
-  };
+  struct FileOffset;
 
-  struct BlockSize {
-    std::uint32_t value;
-  };
+  explicit FileHandler(FileOffset offset);
 
-  FileHandler(FileOffset offset, BlockSize block_size);
-
-  [[nodiscard]] auto offset() const noexcept -> std::uint32_t;
-  [[nodiscard]] auto block_size() const noexcept -> std::uint32_t;
-  [[nodiscard]] auto handled_size() const noexcept -> std::uint32_t;
+  [[nodiscard]] auto offset() const noexcept -> std::uint64_t;
+  [[nodiscard]] auto handled_size() const noexcept -> std::uint64_t;
 
   void set_offset(FileOffset offset) noexcept;
-  void set_block_size(BlockSize block_size) noexcept;
 
 protected:
-  void increase_handled_size(std::uint32_t size) noexcept;
+  void increase_handled_size(std::uint64_t size) noexcept;
+};
+
+struct FileHandler::FileOffset {
+  std::uint64_t value;
+
+  explicit FileOffset(std::uint64_t value);
 };
