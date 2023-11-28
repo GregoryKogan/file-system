@@ -1,11 +1,35 @@
 #include "FileSystem.hpp"
 
-void FileSystem::make_fs(std::string const &path, Settings const &settings) {
+void FileSystem::make_fs(std::string const &path, Settings const &settings, bool allow_big) {
+  validate_settings(settings, allow_big);
+
   auto ofs = std::make_unique<std::ofstream>(path, std::ios::binary);
   FileWriter writer(std::move(ofs), FileHandler::FileOffset(0));
 
   fill_zeros(writer, settings.size);
   write_settings(writer, settings);
+}
+
+void FileSystem::validate_settings(Settings const &settings, bool allow_big) {
+  if (settings.size < MIN_FS_SIZE) {
+    throw std::runtime_error("File system size must be greater than " + std::to_string(MIN_FS_SIZE) + " bytes");
+  }
+
+  if (settings.cluster_size < MIN_CLUSTER_SIZE) {
+    throw std::runtime_error("Cluster size must be greater than " + std::to_string(MIN_CLUSTER_SIZE) + " bytes");
+  }
+
+  if (settings.size - settings.cluster_size < MIN_FS_SIZE) {
+    throw std::runtime_error("Cluster size is too big for this file system size. "
+                             "File system size must be greater than " +
+                             std::to_string(MIN_FS_SIZE + settings.cluster_size) + " bytes");
+  }
+
+  if (!allow_big && settings.size > BIG_THRESHOLD) {
+    throw std::runtime_error("File system size is too big. "
+                             "Use allow_big flag to allow file systems bigger than " +
+                             std::to_string(BIG_THRESHOLD) + " bytes");
+  }
 }
 
 void FileSystem::fill_zeros(FileWriter &writer, std::uint64_t size) {
