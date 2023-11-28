@@ -23,6 +23,8 @@ public:
   static auto pretty_print_fat(FAT const &fat) -> std::string;
 
 private:
+  static const std::uint64_t MAX_ENTRIES_TO_STRINGIFY = 1000000;
+
   static auto to_fat_entry(std::vector<std::byte> const &entry_bytes) -> FATEntry;
   static auto to_string(std::byte status) -> std::string;
 };

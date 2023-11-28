@@ -35,9 +35,12 @@ auto FAT::to_fat_entry(std::vector<std::byte> const &entry_bytes) -> FATEntry {
 }
 
 auto FAT::pretty_print_fat(FAT const &fat) -> std::string {
+  auto entries_count = fat.entries_count();
+  if (entries_count > MAX_ENTRIES_TO_STRINGIFY) throw std::runtime_error("Too many FAT entries to stringify");
+
   std::ostringstream oss;
 
-  oss << "FAT entries count: " << fat.entries_count() << '\n';
+  oss << "FAT entries count: " << entries_count << '\n';
   oss << "FAT entries:" << '\n';
 
   auto entries = fat.entries();

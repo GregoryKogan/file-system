@@ -29,6 +29,8 @@ auto operator<<(std::ostream &out_stream, FileSystem const &file_system) -> std:
   out_stream << "Settings:\n";
   out_stream << "    Size: " << file_system.settings_.size << '\n';
   out_stream << "    Cluster size: " << file_system.settings_.cluster_size << '\n';
-  out_stream << FAT::pretty_print_fat(*file_system.fat_);
+  try {
+    out_stream << FAT::pretty_print_fat(*file_system.fat_);
+  } catch (std::exception const &e) { out_stream << "FAT: " << e.what() << '\n'; }
   return out_stream;
 }
