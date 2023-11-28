@@ -63,7 +63,7 @@ void FSMaker::write_fat(FileWriter &writer, Settings const &settings) {
   auto entries_count = calculate_fat_entries_count(settings);
   for (std::uint64_t i = 0; i < entries_count; ++i) {
     std::vector<std::byte> bytes(FAT_ENTRY_SIZE, std::byte{0});
-    bytes[0] = ClusterStatus::FREE;
+    bytes[0] = ClusterStatusOptions::FREE;
     writer.write_next_block(bytes);
   }
 }

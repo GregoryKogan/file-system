@@ -13,8 +13,8 @@ void logic() {
 
   FileSystem::make_fs(PATH, {SIZE, CLUSTER_SIZE});
 
-  FileSystem file_sys;
-  file_sys.open_fs(PATH);
+  FileSystem file_system(PATH);
+  std::cout << file_system;
 }
 
 auto main() -> int {

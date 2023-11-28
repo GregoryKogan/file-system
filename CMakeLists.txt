@@ -17,6 +17,8 @@ add_executable(
     src/FileSystem/Converter/Converter.cpp
     src/FileSystem/FSMaker/FSMaker.hpp
     src/FileSystem/FSMaker/FSMaker.cpp
+    src/FileSystem/FAT/FAT.hpp
+    src/FileSystem/FAT/FAT.cpp
     src/FileSystem/FileSystem.hpp
     src/FileSystem/FileSystem.cpp
 )
