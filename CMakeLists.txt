@@ -13,4 +13,11 @@ add_executable(
     src/file_io/FileReader/FileReader.cpp
     src/file_io/FileWriter/FileWriter.hpp
     src/file_io/FileWriter/FileWriter.cpp
+    src/FileSystem/FileSystem.hpp
+    src/FileSystem/FileSystem.cpp
+)
+
+target_compile_options(
+    fs PRIVATE
+    -O3
 )
