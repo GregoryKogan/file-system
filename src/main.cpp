@@ -12,6 +12,9 @@ void logic() {
   const uint64_t CLUSTER_SIZE = 64;
 
   FileSystem::make_fs(PATH, {SIZE, CLUSTER_SIZE});
+
+  FileSystem file_sys;
+  file_sys.open_fs(PATH);
 }
 
 auto main() -> int {

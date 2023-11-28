@@ -1,7 +1,8 @@
 #pragma once
 
-#include "../../file_io/FileReader/FileReader.hpp"
-#include "../../file_io/FileWriter/FileWriter.hpp"
+#include "../Converter/Converter.hpp"
+#include "../file_io/FileReader/FileReader.hpp"
+#include "../file_io/FileWriter/FileWriter.hpp"
 #include <cstdint>
 #include <string>
 
@@ -31,8 +32,6 @@ public:
   static auto calculate_fat_entries_count(Settings const &settings) -> std::uint64_t;
 
 private:
-  static auto to_bytes(std::uint64_t value) -> std::vector<std::byte>;
-
   static void validate_settings(Settings const &settings, bool allow_big);
 
   static void fill_zeros(FileWriter &writer, std::uint64_t size);

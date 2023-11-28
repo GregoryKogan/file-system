@@ -50,25 +50,11 @@ void FSMaker::fill_zeros(FileWriter &writer, std::uint64_t size) {
 void FSMaker::write_settings(FileWriter &writer, Settings const &settings) {
   writer.set_offset(FileHandler::FileOffset(0));
 
-  auto size_bytes = to_bytes(settings.size);
+  auto size_bytes = Converter::to_bytes(settings.size);
   writer.write_next_block(size_bytes);
 
-  auto cluster_size_bytes = to_bytes(settings.cluster_size);
+  auto cluster_size_bytes = Converter::to_bytes(settings.cluster_size);
   writer.write_next_block(cluster_size_bytes);
-}
-
-auto FSMaker::to_bytes(std::uint64_t value) -> std::vector<std::byte> {
-  const uint8_t BYTES_IN_UINT64 = 8;
-  const uint8_t BITS_IN_BYTE = 8;
-
-  std::vector<std::byte> bytes;
-  bytes.resize(BYTES_IN_UINT64);
-
-  for (std::size_t i = 0; i < BYTES_IN_UINT64; ++i) {
-    bytes[BYTES_IN_UINT64 - i - 1] = static_cast<std::byte>(value >> BITS_IN_BYTE * i);
-  }
-
-  return bytes;
 }
 
 void FSMaker::write_fat(FileWriter &writer, Settings const &settings) {

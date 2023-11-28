@@ -10,9 +10,16 @@ class FileReader : public FileHandler {
   std::uint64_t block_size_;
 
 public:
-  struct BlockSize;
+  struct BlockSize {
+    std::uint64_t value;
 
-  FileReader(std::unique_ptr<std::istream> stream, FileOffset offset, BlockSize block_size);
+    explicit BlockSize(std::uint64_t value);
+  };
+
+  static const std::uint64_t DEFAULT_BLOCK_SIZE = 1024;
+
+  FileReader(std::unique_ptr<std::istream> stream, FileOffset offset,
+             BlockSize block_size = BlockSize(DEFAULT_BLOCK_SIZE));
 
   [[nodiscard]] auto block_size() const noexcept -> std::uint64_t;
 
@@ -20,10 +27,4 @@ public:
 
   [[nodiscard]] auto read_block() const -> std::vector<std::byte>;
   auto read_next_block() -> std::vector<std::byte>;
-};
-
-struct FileReader::BlockSize {
-  std::uint64_t value;
-
-  explicit BlockSize(std::uint64_t value);
 };
