@@ -5,7 +5,8 @@ FileWriter::FileWriter(std::unique_ptr<std::ostream> stream, FileOffset offset)
 
 void FileWriter::write(const std::vector<std::byte> &bytes) const {
   os_->seekp(offset() + handled_size());
-  for (auto byte : bytes) *os_ << static_cast<char>(byte);
+  os_->write(reinterpret_cast<const char *>(bytes.data()), // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
+             static_cast<std::streamsize>(bytes.size()));
   os_->flush();
 }
 
