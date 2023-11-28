@@ -4,6 +4,8 @@ void FSMaker::make_fs(std::string const &path, Settings const &settings, bool al
   validate_settings(settings, allow_big);
 
   auto ofs = std::make_unique<std::ofstream>(path, std::ios::binary);
+  if (!ofs->is_open()) throw std::runtime_error("Cannot open file " + path);
+
   FileWriter writer(std::move(ofs), FileHandler::FileOffset(0));
 
   fill_zeros(writer, settings.size);
