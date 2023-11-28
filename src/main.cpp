@@ -11,8 +11,7 @@ void logic() {
   const uint64_t SIZE = 1024;
   const uint64_t CLUSTER_SIZE = 64;
 
-  FileSystem::Settings settings{.size = SIZE, .cluster_size = CLUSTER_SIZE};
-  FileSystem::make_fs(PATH, settings);
+  FileSystem::make_fs(PATH, {SIZE, CLUSTER_SIZE});
 }
 
 auto main() -> int {
