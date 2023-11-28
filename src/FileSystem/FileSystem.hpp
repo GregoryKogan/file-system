@@ -13,6 +13,18 @@ class FileSystem {
   static const std::uint64_t MIN_FS_SIZE = 16;
   static const std::uint64_t MIN_CLUSTER_SIZE = 8;
 
+  static const std::uint64_t SETTINGS_SIZE = 16;
+
+  static const std::uint64_t FAT_STATUS_SIZE = 1;
+  static const std::uint64_t FAT_NEXT_CLUSTER_SIZE = 8;
+  static const std::uint64_t FAT_ENTRY_SIZE = FAT_STATUS_SIZE + FAT_NEXT_CLUSTER_SIZE;
+
+  static const struct ClusterStatus {
+    static const std::byte FREE = std::byte{238};
+    static const std::byte BUSY = std::byte{187};
+    static const std::byte LAST = std::byte{255};
+  } ClusterStatus;
+
 public:
   struct Settings;
 
@@ -25,6 +37,9 @@ private:
 
   static void fill_zeros(FileWriter &writer, std::uint64_t size);
   static void write_settings(FileWriter &writer, Settings const &settings);
+
+  static void write_fat(FileWriter &writer, Settings const &settings);
+  static auto calculate_fat_entries_count(Settings const &settings) -> std::uint64_t;
 };
 
 struct FileSystem::Settings {

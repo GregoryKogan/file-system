@@ -8,6 +8,7 @@ void FileSystem::make_fs(std::string const &path, Settings const &settings, bool
 
   fill_zeros(writer, settings.size);
   write_settings(writer, settings);
+  write_fat(writer, settings);
 }
 
 void FileSystem::validate_settings(Settings const &settings, bool allow_big) {
@@ -66,4 +67,19 @@ auto FileSystem::to_bytes(std::uint64_t value) -> std::vector<std::byte> {
   }
 
   return bytes;
+}
+
+void FileSystem::write_fat(FileWriter &writer, Settings const &settings) {
+  writer.set_offset(FileHandler::FileOffset(SETTINGS_SIZE));
+
+  auto entries_count = calculate_fat_entries_count(settings);
+  for (std::uint64_t i = 0; i < entries_count; ++i) {
+    std::vector<std::byte> bytes(FAT_ENTRY_SIZE, std::byte{0});
+    bytes[0] = ClusterStatus::FREE;
+    writer.write_next_block(bytes);
+  }
+}
+
+auto FileSystem::calculate_fat_entries_count(Settings const &settings) -> std::uint64_t {
+  return (settings.size - SETTINGS_SIZE) / (FAT_ENTRY_SIZE + settings.cluster_size);
 }
