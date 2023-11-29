@@ -1,10 +1,10 @@
 #pragma once
 
 #include "Converter/Converter.hpp"
+#include "DiskHandler/DiskReader/DiskReader.hpp"
+#include "DiskHandler/DiskWriter/DiskWriter.hpp"
 #include "FAT/FAT.hpp"
 #include "FSMaker/FSMaker.hpp"
-#include "FileHandler/FileReader/FileReader.hpp"
-#include "FileHandler/FileWriter/FileWriter.hpp"
 #include <cstdint>
 #include <sstream>
 #include <string>
@@ -12,7 +12,7 @@
 #include <iostream>
 
 class FileSystem : public FSMaker {
-  std::shared_ptr<FileReader> fs_reader_;
+  std::shared_ptr<DiskReader> fs_reader_;
   Settings settings_ = {0, 0};
   std::unique_ptr<FAT> fat_;
 

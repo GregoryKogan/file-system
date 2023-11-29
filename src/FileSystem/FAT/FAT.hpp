@@ -11,11 +11,11 @@ public:
   };
 
 private:
-  std::shared_ptr<FileReader> fs_reader_;
+  std::shared_ptr<DiskReader> fs_reader_;
   std::uint64_t entries_count_;
 
 public:
-  explicit FAT(std::shared_ptr<FileReader> &fs_reader, FSMaker::Settings const &settings);
+  explicit FAT(std::shared_ptr<DiskReader> &fs_reader, FSMaker::Settings const &settings);
 
   [[nodiscard]] auto entries_count() const noexcept -> std::uint64_t;
   [[nodiscard]] auto entries() const -> std::vector<FATEntry>;

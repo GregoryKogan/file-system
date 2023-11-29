@@ -2,26 +2,26 @@
 
 #include <utility>
 
-class FileHandler {
+class DiskHandler {
   std::uint64_t offset_;
   std::uint64_t handled_size_ = 0;
 
 public:
-  struct FileOffset;
+  struct DiskOffset;
 
-  explicit FileHandler(FileOffset offset);
+  explicit DiskHandler(DiskOffset offset);
 
   [[nodiscard]] auto offset() const noexcept -> std::uint64_t;
   [[nodiscard]] auto handled_size() const noexcept -> std::uint64_t;
 
-  void set_offset(FileOffset offset) noexcept;
+  void set_offset(DiskOffset offset) noexcept;
 
 protected:
   void increase_handled_size(std::uint64_t size) noexcept;
 };
 
-struct FileHandler::FileOffset {
+struct DiskHandler::DiskOffset {
   std::uint64_t value;
 
-  explicit FileOffset(std::uint64_t value);
+  explicit DiskOffset(std::uint64_t value);
 };

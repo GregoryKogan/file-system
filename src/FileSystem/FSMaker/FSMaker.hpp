@@ -1,8 +1,8 @@
 #pragma once
 
 #include "../Converter/Converter.hpp"
-#include "../FileHandler/FileReader/FileReader.hpp"
-#include "../FileHandler/FileWriter/FileWriter.hpp"
+#include "../DiskHandler/DiskReader/DiskReader.hpp"
+#include "../DiskHandler/DiskWriter/DiskWriter.hpp"
 #include <cstdint>
 #include <string>
 
@@ -35,10 +35,10 @@ public:
 private:
   static void validate_settings(Settings const &settings, bool allow_big);
 
-  static void fill_zeros(FileWriter &writer, std::uint64_t size);
-  static void write_settings(FileWriter &writer, Settings const &settings);
+  static void fill_zeros(DiskWriter &writer, std::uint64_t size);
+  static void write_settings(DiskWriter &writer, Settings const &settings);
 
-  static void write_fat(FileWriter &writer, Settings const &settings);
+  static void write_fat(DiskWriter &writer, Settings const &settings);
 };
 
 struct FSMaker::Settings {

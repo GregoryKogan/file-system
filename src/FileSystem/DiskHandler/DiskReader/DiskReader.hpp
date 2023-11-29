@@ -3,9 +3,9 @@
 #include <fstream>
 #include <vector>
 
-#include "../FileHandler.hpp"
+#include "../DiskHandler.hpp"
 
-class FileReader : public FileHandler {
+class DiskReader : public DiskHandler {
   std::unique_ptr<std::istream> is_;
   std::uint64_t block_size_;
 
@@ -18,7 +18,7 @@ public:
 
   static const std::uint64_t DEFAULT_BLOCK_SIZE = 1024;
 
-  FileReader(std::unique_ptr<std::istream> stream, FileOffset offset,
+  DiskReader(std::unique_ptr<std::istream> stream, DiskOffset offset,
              BlockSize block_size = BlockSize(DEFAULT_BLOCK_SIZE));
 
   [[nodiscard]] auto block_size() const noexcept -> std::uint64_t;

@@ -1,13 +1,13 @@
 #include "FAT.hpp"
 
-FAT::FAT(std::shared_ptr<FileReader> &fs_reader, FSMaker::Settings const &settings)
+FAT::FAT(std::shared_ptr<DiskReader> &fs_reader, FSMaker::Settings const &settings)
     : fs_reader_(fs_reader), entries_count_(FSMaker::calculate_fat_entries_count(settings)) {}
 
 auto FAT::entries_count() const noexcept -> std::uint64_t { return entries_count_; }
 
 auto FAT::entries() const -> std::vector<FATEntry> {
-  fs_reader_->set_offset(FileHandler::FileOffset(FSMaker::FAT_OFFSET));
-  fs_reader_->set_block_size(FileReader::BlockSize(FSMaker::FAT_ENTRY_SIZE));
+  fs_reader_->set_offset(DiskHandler::DiskOffset(FSMaker::FAT_OFFSET));
+  fs_reader_->set_block_size(DiskReader::BlockSize(FSMaker::FAT_ENTRY_SIZE));
 
   std::vector<FATEntry> entries;
   for (std::uint64_t i = 0; i < entries_count_; ++i) {

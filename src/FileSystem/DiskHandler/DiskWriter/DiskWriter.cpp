@@ -1,16 +1,16 @@
-#include "FileWriter.hpp"
+#include "DiskWriter.hpp"
 
-FileWriter::FileWriter(std::unique_ptr<std::ostream> stream, FileOffset offset)
-    : FileHandler(offset), os_(std::move(stream)) {}
+DiskWriter::DiskWriter(std::unique_ptr<std::ostream> stream, DiskOffset offset)
+    : DiskHandler(offset), os_(std::move(stream)) {}
 
-void FileWriter::write(const std::vector<std::byte> &bytes) const {
+void DiskWriter::write(const std::vector<std::byte> &bytes) const {
   os_->seekp(static_cast<std::streamoff>(offset() + handled_size()));
   os_->write(reinterpret_cast<const char *>(bytes.data()), // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
              static_cast<std::streamsize>(bytes.size()));
   os_->flush();
 }
 
-void FileWriter::write_next_block(const std::vector<std::byte> &bytes) {
+void DiskWriter::write_next_block(const std::vector<std::byte> &bytes) {
   write(bytes);
   increase_handled_size(bytes.size());
 }

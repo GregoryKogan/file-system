@@ -6,7 +6,7 @@ void FSMaker::make_fs(std::string const &path, Settings const &settings, bool al
   auto ofs = std::make_unique<std::ofstream>(path, std::ios::binary);
   if (!ofs->is_open()) throw std::runtime_error("Cannot open file " + path);
 
-  FileWriter writer(std::move(ofs), FileHandler::FileOffset(0));
+  DiskWriter writer(std::move(ofs), DiskHandler::DiskOffset(0));
 
   fill_zeros(writer, settings.size);
   write_settings(writer, settings);
@@ -35,8 +35,8 @@ void FSMaker::validate_settings(Settings const &settings, bool allow_big) {
   }
 }
 
-void FSMaker::fill_zeros(FileWriter &writer, std::uint64_t size) {
-  writer.set_offset(FileHandler::FileOffset(0));
+void FSMaker::fill_zeros(DiskWriter &writer, std::uint64_t size) {
+  writer.set_offset(DiskHandler::DiskOffset(0));
 
   // write full blocks
   std::vector<std::byte> bytes(MAX_BLOCK_SIZE, std::byte{0});
@@ -47,8 +47,8 @@ void FSMaker::fill_zeros(FileWriter &writer, std::uint64_t size) {
   writer.write_next_block(bytes);
 }
 
-void FSMaker::write_settings(FileWriter &writer, Settings const &settings) {
-  writer.set_offset(FileHandler::FileOffset(0));
+void FSMaker::write_settings(DiskWriter &writer, Settings const &settings) {
+  writer.set_offset(DiskHandler::DiskOffset(0));
 
   auto size_bytes = Converter::to_bytes(settings.size);
   writer.write_next_block(size_bytes);
@@ -57,8 +57,8 @@ void FSMaker::write_settings(FileWriter &writer, Settings const &settings) {
   writer.write_next_block(cluster_size_bytes);
 }
 
-void FSMaker::write_fat(FileWriter &writer, Settings const &settings) {
-  writer.set_offset(FileHandler::FileOffset(SETTINGS_SIZE));
+void FSMaker::write_fat(DiskWriter &writer, Settings const &settings) {
+  writer.set_offset(DiskHandler::DiskOffset(SETTINGS_SIZE));
 
   auto entries_count = calculate_fat_entries_count(settings);
   for (std::uint64_t i = 0; i < entries_count; ++i) {

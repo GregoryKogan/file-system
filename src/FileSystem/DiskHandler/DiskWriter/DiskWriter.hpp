@@ -3,13 +3,13 @@
 #include <fstream>
 #include <vector>
 
-#include "../FileHandler.hpp"
+#include "../DiskHandler.hpp"
 
-class FileWriter : public FileHandler {
+class DiskWriter : public DiskHandler {
   std::unique_ptr<std::ostream> os_;
 
 public:
-  FileWriter(std::unique_ptr<std::ostream> stream, FileOffset offset);
+  DiskWriter(std::unique_ptr<std::ostream> stream, DiskOffset offset);
 
   void write(const std::vector<std::byte> &bytes) const;
   void write_next_block(const std::vector<std::byte> &bytes);
