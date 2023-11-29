@@ -7,12 +7,12 @@ add_executable(
     fs 
     src/main.cpp
 
-    src/FileSystem/file_io/FileHandler.hpp
-    src/FileSystem/file_io/FileHandler.cpp
-    src/FileSystem/file_io/FileReader/FileReader.hpp
-    src/FileSystem/file_io/FileReader/FileReader.cpp
-    src/FileSystem/file_io/FileWriter/FileWriter.hpp
-    src/FileSystem/file_io/FileWriter/FileWriter.cpp
+    src/FileSystem/FileHandler/FileHandler.hpp
+    src/FileSystem/FileHandler/FileHandler.cpp
+    src/FileSystem/FileHandler/FileReader/FileReader.hpp
+    src/FileSystem/FileHandler/FileReader/FileReader.cpp
+    src/FileSystem/FileHandler/FileWriter/FileWriter.hpp
+    src/FileSystem/FileHandler/FileWriter/FileWriter.cpp
     src/FileSystem/Converter/Converter.hpp
     src/FileSystem/Converter/Converter.cpp
     src/FileSystem/FSMaker/FSMaker.hpp
