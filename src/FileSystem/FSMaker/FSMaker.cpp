@@ -13,6 +13,8 @@ void FSMaker::make_fs(std::string const &path, Settings const &settings, bool al
   write_fat(writer, settings);
 }
 
+auto FSMaker::fat_offset() -> std::uint64_t { return FAT_OFFSET; }
+
 void FSMaker::validate_settings(Settings const &settings, bool allow_big) {
   if (settings.size < MIN_FS_SIZE) {
     throw std::runtime_error("File system size must be greater than " + std::to_string(MIN_FS_SIZE) + " bytes");

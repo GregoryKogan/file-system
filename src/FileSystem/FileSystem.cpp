@@ -10,7 +10,7 @@ FileSystem::FileSystem(std::string const &path) {
 
   read_settings();
 
-  fat_ = std::make_shared<FAT>(disk_reader_, disk_writer_, DiskHandler::DiskOffset(FSMaker::FAT_OFFSET),
+  fat_ = std::make_shared<FAT>(disk_reader_, disk_writer_, DiskHandler::DiskOffset(FSMaker::fat_offset()),
                                FSMaker::calculate_fat_entries_count(settings_));
 }
 

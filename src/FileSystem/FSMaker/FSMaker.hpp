@@ -14,14 +14,16 @@ class FSMaker {
   static const std::uint64_t MIN_CLUSTER_SIZE = 8;
 
   static const std::uint64_t SETTINGS_SIZE = 16;
-
-public:
-  struct Settings;
-
   static const std::uint64_t FAT_OFFSET = SETTINGS_SIZE;
 
-  static void make_fs(std::string const &path, Settings const &settings, bool allow_big = false);
+public:
+  struct Settings {
+    std::uint64_t size;
+    std::uint64_t cluster_size;
+  };
 
+  static void make_fs(std::string const &path, Settings const &settings, bool allow_big = false);
+  static auto fat_offset() -> std::uint64_t;
   static auto calculate_fat_entries_count(Settings const &settings) -> std::uint64_t;
 
 private:
@@ -29,11 +31,5 @@ private:
 
   static void fill_zeros(DiskWriter &writer, std::uint64_t size);
   static void write_settings(DiskWriter &writer, Settings const &settings);
-
   static void write_fat(DiskWriter &writer, Settings const &settings);
-};
-
-struct FSMaker::Settings {
-  std::uint64_t size;
-  std::uint64_t cluster_size;
 };
