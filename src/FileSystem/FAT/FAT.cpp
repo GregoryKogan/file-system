@@ -35,7 +35,26 @@ auto FAT::allocate() -> std::uint64_t {
   throw std::runtime_error("Cannot allocate cluster");
 }
 
+void FAT::set_next(std::uint64_t cluster_index, std::uint64_t next_cluster_index) {
+  if (cluster_index >= entries_count_ || next_cluster_index >= entries_count_) {
+    throw std::runtime_error("Invalid cluster index");
+  }
+
+  auto entry = get_entry(cluster_index);
+  if (entry.status == ClusterStatusOptions::FREE) throw std::runtime_error("Cluster is not allocated");
+  if (entry.status == ClusterStatusOptions::ALLOCATED) throw std::runtime_error("Cluster is not last");
+
+  entry.next_cluster = next_cluster_index;
+  entry.status = ClusterStatusOptions::ALLOCATED;
+  set_entry(cluster_index, entry);
+}
+
 auto FAT::is_allocated(std::uint64_t cluster_index) const -> bool {
+  auto entry = get_entry(cluster_index);
+  return entry.status != ClusterStatusOptions::FREE;
+}
+
+auto FAT::get_entry(std::uint64_t cluster_index) const -> FATEntry {
   if (cluster_index >= entries_count_) throw std::runtime_error("Invalid cluster index");
 
   std::uint64_t cluster_disk_offset = disk_offset_.value + cluster_index * ENTRY_SIZE;
@@ -43,7 +62,15 @@ auto FAT::is_allocated(std::uint64_t cluster_index) const -> bool {
   disk_reader_->set_block_size(DiskReader::BlockSize(ENTRY_SIZE));
   auto entry_bytes = disk_reader_->read_block();
   auto entry = to_fat_entry(entry_bytes);
-  return entry.status != ClusterStatusOptions::FREE;
+  return entry;
+}
+
+void FAT::set_entry(std::uint64_t cluster_index, FATEntry const &entry) {
+  if (cluster_index >= entries_count_) throw std::runtime_error("Invalid cluster index");
+
+  std::uint64_t cluster_disk_offset = disk_offset_.value + cluster_index * ENTRY_SIZE;
+  disk_writer_->set_offset(DiskHandler::DiskOffset(cluster_disk_offset));
+  disk_writer_->write(to_bytes(entry));
 }
 
 auto FAT::to_fat_entry(std::vector<std::byte> const &entry_bytes) -> FATEntry {

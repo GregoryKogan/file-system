@@ -28,6 +28,7 @@ public:
   [[nodiscard]] auto entries() const -> std::vector<FATEntry>;
 
   [[nodiscard]] auto allocate() -> std::uint64_t;
+  void set_next(std::uint64_t cluster_index, std::uint64_t next_cluster_index);
 
   static auto empty_entry_bytes() -> std::vector<std::byte>;
   static auto entry_size() -> std::uint64_t;
@@ -35,6 +36,9 @@ public:
 
 private:
   [[nodiscard]] auto is_allocated(std::uint64_t cluster_index) const -> bool;
+
+  [[nodiscard]] auto get_entry(std::uint64_t cluster_index) const -> FATEntry;
+  void set_entry(std::uint64_t cluster_index, FATEntry const &entry);
 
   static auto to_fat_entry(std::vector<std::byte> const &entry_bytes) -> FATEntry;
   static auto to_bytes(FATEntry const &entry) -> std::vector<std::byte>;
