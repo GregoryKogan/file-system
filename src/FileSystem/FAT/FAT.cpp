@@ -55,6 +55,10 @@ auto FAT::is_last(std::uint64_t cluster_index) const -> bool {
   return get_entry(cluster_index).status == ClusterStatusOptions::LAST;
 }
 
+auto FAT::cluster_offset(std::uint64_t cluster_index, std::uint64_t cluster_size) const -> DiskHandler::DiskOffset {
+  return DiskHandler::DiskOffset(disk_offset_.value + entries_count_ * ENTRY_SIZE + cluster_index * cluster_size);
+}
+
 auto FAT::is_allocated(std::uint64_t cluster_index) const -> bool {
   auto entry = get_entry(cluster_index);
   return entry.status != ClusterStatusOptions::FREE;

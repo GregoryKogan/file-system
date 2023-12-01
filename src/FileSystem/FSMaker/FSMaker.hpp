@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../Converter/Converter.hpp"
+#include "../Directory/Directory.hpp"
 #include "../DiskHandler/DiskReader/DiskReader.hpp"
 #include "../DiskHandler/DiskWriter/DiskWriter.hpp"
 #include "../FAT/FAT.hpp"

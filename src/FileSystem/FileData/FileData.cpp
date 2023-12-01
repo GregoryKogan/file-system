@@ -51,3 +51,5 @@ auto FileData::from_bytes(std::vector<std::byte> const &bytes) -> FileData {
 
   return FileData(name, FileSize{size}, first_cluster_index, is_directory);
 }
+
+auto FileData::file_data_size() noexcept -> std::uint64_t { return FILE_DATA_SIZE; }

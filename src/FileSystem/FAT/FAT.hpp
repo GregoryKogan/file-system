@@ -31,6 +31,8 @@ public:
   void set_next(std::uint64_t cluster_index, std::uint64_t next_cluster_index);
   [[nodiscard]] auto get_next(std::uint64_t cluster_index) const -> std::uint64_t;
   [[nodiscard]] auto is_last(std::uint64_t cluster_index) const -> bool;
+  [[nodiscard]] auto cluster_offset(std::uint64_t cluster_index, std::uint64_t cluster_size) const
+      -> DiskHandler::DiskOffset;
 
   static auto empty_entry_bytes() -> std::vector<std::byte>;
   static auto entry_size() -> std::uint64_t;

@@ -19,6 +19,10 @@ add_executable(
     src/FileSystem/FSMaker/FSMaker.cpp
     src/FileSystem/FAT/FAT.hpp
     src/FileSystem/FAT/FAT.cpp
+    src/FileSystem/FileData/FileData.hpp
+    src/FileSystem/FileData/FileData.cpp
+    src/FileSystem/Directory/Directory.hpp
+    src/FileSystem/Directory/Directory.cpp
     src/FileSystem/FileSystem.hpp
     src/FileSystem/FileSystem.cpp
 )
