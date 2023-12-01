@@ -3,6 +3,7 @@
 #include "../Converter/Converter.hpp"
 #include "../DiskHandler/DiskReader/DiskReader.hpp"
 #include "../DiskHandler/DiskWriter/DiskWriter.hpp"
+#include "../FAT/FAT.hpp"
 #include <cstdint>
 #include <string>
 
@@ -18,15 +19,6 @@ public:
   struct Settings;
 
   static const std::uint64_t FAT_OFFSET = SETTINGS_SIZE;
-  static const std::uint64_t FAT_STATUS_SIZE = 1;
-  static const std::uint64_t FAT_NEXT_CLUSTER_SIZE = 8;
-  static const std::uint64_t FAT_ENTRY_SIZE = FAT_STATUS_SIZE + FAT_NEXT_CLUSTER_SIZE;
-
-  struct ClusterStatusOptions {
-    static const std::byte FREE = std::byte{238};
-    static const std::byte BUSY = std::byte{187};
-    static const std::byte LAST = std::byte{255};
-  };
 
   static void make_fs(std::string const &path, Settings const &settings, bool allow_big = false);
 

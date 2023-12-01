@@ -1,8 +1,8 @@
 #include "FileSystem.hpp"
 
 FileSystem::FileSystem(std::string const &path) {
-  auto ifs = std::make_unique<std::ifstream>(path, std::ios::binary);
-  auto ofs = std::make_unique<std::ofstream>(path, std::ios::binary);
+  auto ifs = std::make_unique<std::ifstream>(path, std::ios::binary | std::ios::in);
+  auto ofs = std::make_unique<std::ofstream>(path, std::ios::binary | std::ios::out | std::ios::in);
   if (!ifs->is_open() || !ofs->is_open()) throw std::runtime_error("Cannot open file " + path);
 
   disk_reader_ = std::make_shared<DiskReader>(std::move(ifs), DiskHandler::DiskOffset(0));
@@ -10,7 +10,8 @@ FileSystem::FileSystem(std::string const &path) {
 
   read_settings();
 
-  fat_ = std::make_shared<FAT>(disk_reader_, disk_writer_, settings_);
+  fat_ = std::make_shared<FAT>(disk_reader_, disk_writer_, DiskHandler::DiskOffset(FSMaker::FAT_OFFSET),
+                               FSMaker::calculate_fat_entries_count(settings_));
 }
 
 void FileSystem::make(std::string const &path, FSMaker::Settings const &settings, bool allow_big) {
