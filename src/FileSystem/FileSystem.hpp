@@ -13,9 +13,12 @@
 
 class FileSystem {
   FSMaker fs_maker_;
-  std::shared_ptr<DiskReader> fs_reader_;
-  FSMaker::Settings settings_ = {0, 0};
-  std::unique_ptr<FAT> fat_;
+  FSMaker::Settings settings_ = {};
+
+  std::shared_ptr<DiskReader> disk_reader_;
+  std::shared_ptr<DiskWriter> disk_writer_;
+
+  std::shared_ptr<FAT> fat_;
 
 public:
   explicit FileSystem(std::string const &path);
