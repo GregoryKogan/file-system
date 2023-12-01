@@ -29,6 +29,7 @@ public:
 
   [[nodiscard]] auto allocate() -> std::uint64_t;
   void set_next(std::uint64_t cluster_index, std::uint64_t next_cluster_index);
+  [[nodiscard]] auto get_next(std::uint64_t cluster_index) const -> std::uint64_t;
 
   static auto empty_entry_bytes() -> std::vector<std::byte>;
   static auto entry_size() -> std::uint64_t;
