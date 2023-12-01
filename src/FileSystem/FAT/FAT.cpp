@@ -51,6 +51,10 @@ void FAT::set_next(std::uint64_t cluster_index, std::uint64_t next_cluster_index
 
 auto FAT::get_next(std::uint64_t cluster_index) const -> std::uint64_t { return get_entry(cluster_index).next_cluster; }
 
+auto FAT::is_last(std::uint64_t cluster_index) const -> bool {
+  return get_entry(cluster_index).status == ClusterStatusOptions::LAST;
+}
+
 auto FAT::is_allocated(std::uint64_t cluster_index) const -> bool {
   auto entry = get_entry(cluster_index);
   return entry.status != ClusterStatusOptions::FREE;
