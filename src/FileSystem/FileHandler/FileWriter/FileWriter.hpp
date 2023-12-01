@@ -11,8 +11,8 @@ public:
   FileWriter(FileData file_data, FileOffset offset, std::shared_ptr<FAT> fat, std::uint64_t cluster_size,
              std::shared_ptr<DiskWriter> disk_writer);
 
-  [[nodiscard]] auto write_block(const std::vector<std::byte> &bytes) -> std::uint64_t;
-  [[nodiscard]] auto write_next_block(const std::vector<std::byte> &bytes) -> std::uint64_t;
+  auto write_block(const std::vector<std::byte> &bytes) -> std::uint64_t;
+  auto write_next_block(const std::vector<std::byte> &bytes) -> std::uint64_t;
 
 private:
   void expand_file(std::uint64_t new_file_size);

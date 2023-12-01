@@ -22,7 +22,6 @@ class FileSystem {
   std::shared_ptr<DiskWriter> disk_writer_;
 
   std::shared_ptr<FAT> fat_;
-  std::uint64_t root_dir_size_;
 
 public:
   explicit FileSystem(std::string const &path);
@@ -37,4 +36,5 @@ public:
 
 private:
   void read_settings();
+  [[nodiscard]] auto root_dir_size() const noexcept -> std::uint64_t;
 };

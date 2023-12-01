@@ -27,6 +27,11 @@ public:
   [[nodiscard]] auto first_cluster_index() const noexcept -> std::uint64_t;
   [[nodiscard]] auto is_directory() const noexcept -> bool;
 
+  auto set_name(std::string name) noexcept -> void;
+  auto set_size(FileSize size) noexcept -> void;
+  auto set_first_cluster_index(std::uint64_t first_cluster_index) noexcept -> void;
+  auto set_is_directory(bool is_directory) noexcept -> void;
+
   [[nodiscard]] auto to_bytes() const -> std::vector<std::byte>;
   static auto from_bytes(std::vector<std::byte> const &bytes) -> FileData;
   [[nodiscard]] auto to_string() const -> std::string;

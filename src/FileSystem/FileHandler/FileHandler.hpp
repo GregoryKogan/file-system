@@ -24,6 +24,7 @@ protected:
   [[nodiscard]] auto fat() const noexcept -> std::shared_ptr<FAT>;
   [[nodiscard]] auto cluster_size() const noexcept -> std::uint64_t;
   [[nodiscard]] auto file_data() const noexcept -> FileData;
+  void set_file_size(std::uint64_t new_size) noexcept;
   void increase_handled_size(std::uint64_t size) noexcept;
 };
 

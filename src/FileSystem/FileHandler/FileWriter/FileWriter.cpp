@@ -7,6 +7,7 @@ FileWriter::FileWriter(FileData file_data, FileOffset offset, std::shared_ptr<FA
 auto FileWriter::write_block(const std::vector<std::byte> &bytes) -> std::uint64_t {
   auto cur_size = file_data().size().bytes;
   auto out_size = std::max(cur_size, offset() + handled_size() + bytes.size());
+
   if (out_size > cur_size) { expand_file(out_size); }
 
   std::uint64_t block_position = 0;
@@ -47,6 +48,10 @@ void FileWriter::expand_file(std::uint64_t new_file_size) {
       new_file_size / cluster_size() + static_cast<std::uint64_t>(new_file_size % cluster_size() != 0);
 
   auto extra_clusters_count = new_clusters_count - occupied_clusters_count;
+
+  set_file_size(new_file_size);
+
+  if (extra_clusters_count == 0) return;
 
   auto cur_cluster = file_data().first_cluster_index();
   while (!fat()->is_last(cur_cluster)) { cur_cluster = fat()->get_next(cur_cluster); }

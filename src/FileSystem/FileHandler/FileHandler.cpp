@@ -20,6 +20,8 @@ auto FileHandler::cluster_size() const noexcept -> std::uint64_t { return cluste
 
 auto FileHandler::file_data() const noexcept -> FileData { return file_data_; }
 
+void FileHandler::set_file_size(std::uint64_t new_size) noexcept { file_data_.set_size(FileData::FileSize{new_size}); }
+
 void FileHandler::increase_handled_size(std::uint64_t size) noexcept { handled_size_ += size; }
 
 FileHandler::FileOffset::FileOffset(std::uint64_t value) : value(value) {}

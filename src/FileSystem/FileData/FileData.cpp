@@ -12,6 +12,16 @@ auto FileData::first_cluster_index() const noexcept -> std::uint64_t { return fi
 
 auto FileData::is_directory() const noexcept -> bool { return is_directory_; }
 
+auto FileData::set_name(std::string name) noexcept -> void { name_ = std::move(name); }
+
+auto FileData::set_size(FileSize size) noexcept -> void { size_ = size.bytes; }
+
+auto FileData::set_first_cluster_index(std::uint64_t first_cluster_index) noexcept -> void {
+  first_cluster_index_ = first_cluster_index;
+}
+
+auto FileData::set_is_directory(bool is_directory) noexcept -> void { is_directory_ = is_directory; }
+
 auto FileData::to_bytes() const -> std::vector<std::byte> {
   auto bytes = std::vector<std::byte>{};
   bytes.reserve(FILE_DATA_SIZE);
