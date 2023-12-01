@@ -11,15 +11,18 @@
 
 #include <iostream>
 
-class FileSystem : public FSMaker {
+class FileSystem {
+  FSMaker fs_maker_;
   std::shared_ptr<DiskReader> fs_reader_;
-  Settings settings_ = {0, 0};
+  FSMaker::Settings settings_ = {0, 0};
   std::unique_ptr<FAT> fat_;
 
 public:
   explicit FileSystem(std::string const &path);
 
-  [[nodiscard]] auto get_settings() const noexcept -> Settings const &;
+  static void make(std::string const &path, FSMaker::Settings const &settings, bool allow_big = false);
+
+  [[nodiscard]] auto get_settings() const noexcept -> FSMaker::Settings const &;
 
   friend auto operator<<(std::ostream &out_stream, FileSystem const &file_system) -> std::ostream &;
 

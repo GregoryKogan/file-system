@@ -11,7 +11,7 @@ void logic() {
   const uint64_t SIZE = 1024;
   const uint64_t CLUSTER_SIZE = 64;
 
-  FileSystem::make_fs(PATH, {SIZE, CLUSTER_SIZE});
+  FileSystem::make(PATH, {SIZE, CLUSTER_SIZE});
 
   FileSystem file_system(PATH);
   std::cout << file_system;

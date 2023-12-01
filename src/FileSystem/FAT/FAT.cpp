@@ -46,13 +46,13 @@ auto FAT::pretty_print_fat(FAT const &fat) -> std::string {
   auto entries = fat.entries();
   for (std::size_t i = 0; i < entries.size(); ++i) {
     auto entry = entries[i];
-    oss << "  " << i << ": " << to_string(entries[i].status) << " " << entry.next_cluster << '\n';
+    oss << "  " << i << ": " << cluster_status_to_string(entries[i].status) << " " << entry.next_cluster << '\n';
   }
 
   return oss.str();
 }
 
-auto FAT::to_string(std::byte status) -> std::string {
+auto FAT::cluster_status_to_string(std::byte status) -> std::string {
   switch (status) {
   case FSMaker::ClusterStatusOptions::FREE: return "FREE";
   case FSMaker::ClusterStatusOptions::BUSY: return "BUSY";

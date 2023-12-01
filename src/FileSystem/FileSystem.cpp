@@ -11,7 +11,11 @@ FileSystem::FileSystem(std::string const &path) {
   fat_ = std::make_unique<FAT>(fs_reader_, settings_);
 }
 
-auto FileSystem::get_settings() const noexcept -> Settings const & { return settings_; }
+void FileSystem::make(std::string const &path, FSMaker::Settings const &settings, bool allow_big) {
+  FSMaker::make_fs(path, settings, allow_big);
+}
+
+auto FileSystem::get_settings() const noexcept -> FSMaker::Settings const & { return settings_; }
 
 void FileSystem::read_settings() {
   fs_reader_->set_offset(DiskHandler::DiskOffset(0));
