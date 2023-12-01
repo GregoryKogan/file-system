@@ -35,6 +35,23 @@ auto FAT::allocate() -> std::uint64_t {
   throw std::runtime_error("Cannot allocate cluster");
 }
 
+auto FAT::allocate(std::uint64_t clusters_count) -> std::uint64_t {
+  if (!can_allocate(clusters_count)) throw std::runtime_error("Cannot allocate clusters");
+
+  std::uint64_t clusters_allocated = 1;
+  auto first_cluster = allocate();
+
+  auto last_allocated_cluster = first_cluster;
+  while (clusters_allocated < clusters_count) {
+    auto next_cluster = allocate();
+    set_next(last_allocated_cluster, next_cluster);
+    last_allocated_cluster = next_cluster;
+    ++clusters_allocated;
+  }
+
+  return first_cluster;
+}
+
 void FAT::set_next(std::uint64_t cluster_index, std::uint64_t next_cluster_index) {
   if (cluster_index >= entries_count_ || next_cluster_index >= entries_count_) {
     throw std::runtime_error("Invalid cluster index");
@@ -67,6 +84,18 @@ auto FAT::cluster_offset(std::uint64_t cluster_index, std::uint64_t cluster_size
 auto FAT::is_allocated(std::uint64_t cluster_index) const -> bool {
   auto entry = get_entry(cluster_index);
   return entry.status != ClusterStatusOptions::FREE;
+}
+
+auto FAT::can_allocate(std::uint64_t clusters_count) const -> bool {
+  std::uint64_t free_clusters_count = 0;
+  for (std::uint64_t i = 0; i < entries_count_; ++i) {
+    if (!is_allocated(i)) {
+      ++free_clusters_count;
+      if (free_clusters_count >= clusters_count) return true;
+    }
+  }
+
+  return false;
 }
 
 auto FAT::get_entry(std::uint64_t cluster_index) const -> FATEntry {
