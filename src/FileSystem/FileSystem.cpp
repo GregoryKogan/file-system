@@ -12,6 +12,8 @@ FileSystem::FileSystem(std::string const &path) {
 
   fat_ = std::make_shared<FAT>(disk_reader_, disk_writer_, DiskHandler::DiskOffset(FSMaker::fat_offset()),
                                FSMaker::calculate_fat_entries_count(settings_));
+
+  root_dir_size_ = 162;
 }
 
 void FileSystem::make(std::string const &path, FSMaker::Settings const &settings, bool allow_big) {
@@ -43,9 +45,22 @@ void FileSystem::make(std::string const &path, FSMaker::Settings const &settings
   auto last_cluster_offset = file_system.fat_->cluster_offset(cur_cluster, cluster_size);
   file_system.disk_writer_->set_offset(last_cluster_offset);
   file_system.disk_writer_->write(last_cluster_bytes);
+
+  file_system.root_dir_size_ = root_dir_bytes.size();
 }
 
 auto FileSystem::get_settings() const noexcept -> FSMaker::Settings const & { return settings_; }
+
+auto FileSystem::ls(std::string const &path) const -> std::vector<FileData> {
+  auto file_reader = FileReader(FileData("/", FileData::FileSize{root_dir_size_}, 0, true), FileHandler::FileOffset(0),
+                                fat_, settings_.cluster_size, disk_reader_);
+  file_reader.set_block_size(FileReader::BlockSize(root_dir_size_));
+
+  auto root_dir_bytes = file_reader.read_block();
+  auto root_dir = Directory::from_bytes(root_dir_bytes);
+
+  return root_dir.files();
+}
 
 void FileSystem::read_settings() {
   disk_reader_->set_offset(DiskHandler::DiskOffset(0));

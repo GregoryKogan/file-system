@@ -5,6 +5,8 @@
 #include "DiskHandler/DiskWriter/DiskWriter.hpp"
 #include "FAT/FAT.hpp"
 #include "FSMaker/FSMaker.hpp"
+#include "FileData/FileData.hpp"
+#include "FileHandler/FileReader/FileReader.hpp"
 #include <cstdint>
 #include <sstream>
 #include <string>
@@ -19,6 +21,7 @@ class FileSystem {
   std::shared_ptr<DiskWriter> disk_writer_;
 
   std::shared_ptr<FAT> fat_;
+  std::uint64_t root_dir_size_;
 
 public:
   explicit FileSystem(std::string const &path);
@@ -26,6 +29,8 @@ public:
   static void make(std::string const &path, FSMaker::Settings const &settings, bool allow_big = false);
 
   [[nodiscard]] auto get_settings() const noexcept -> FSMaker::Settings const &;
+
+  [[nodiscard]] auto ls(std::string const &path) const -> std::vector<FileData>;
 
   friend auto operator<<(std::ostream &out_stream, FileSystem const &file_system) -> std::ostream &;
 

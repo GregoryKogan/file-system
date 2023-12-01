@@ -15,6 +15,10 @@ void logic() {
 
   FileSystem file_system(PATH);
   std::cout << file_system;
+
+  auto ls_res = file_system.ls("/");
+  std::cout << "ls /:\n";
+  for (auto const &file_data : ls_res) { std::cout << file_data.to_string() << '\n'; }
 }
 
 auto main() -> int {

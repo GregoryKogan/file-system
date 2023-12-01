@@ -7,6 +7,8 @@ add_executable(
     fs 
     src/main.cpp
 
+    src/FileSystem/FileSystem.hpp
+    src/FileSystem/FileSystem.cpp
     src/FileSystem/DiskHandler/DiskHandler.hpp
     src/FileSystem/DiskHandler/DiskHandler.cpp
     src/FileSystem/DiskHandler/DiskReader/DiskReader.hpp
@@ -23,8 +25,10 @@ add_executable(
     src/FileSystem/FileData/FileData.cpp
     src/FileSystem/Directory/Directory.hpp
     src/FileSystem/Directory/Directory.cpp
-    src/FileSystem/FileSystem.hpp
-    src/FileSystem/FileSystem.cpp
+    src/FileSystem/FileHandler/FileHandler.hpp
+    src/FileSystem/FileHandler/FileHandler.cpp
+    src/FileSystem/FileHandler/FileReader/FileReader.hpp
+    src/FileSystem/FileHandler/FileReader/FileReader.cpp
 )
 
 target_compile_options(

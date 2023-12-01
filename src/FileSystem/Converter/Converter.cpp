@@ -49,8 +49,11 @@ auto Converter::to_string(std::vector<std::byte> const &bytes) -> std::string {
 
 auto Converter::to_bytes(bool value) -> std::vector<std::byte> {
   std::vector<std::byte> bytes;
-  bytes.push_back(static_cast<std::byte>(value));
-
+  if (value) {
+    bytes.push_back(std::byte{1});
+  } else {
+    bytes.push_back(std::byte{0});
+  }
   return bytes;
 }
 

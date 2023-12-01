@@ -47,9 +47,17 @@ auto FileData::from_bytes(std::vector<std::byte> const &bytes) -> FileData {
   auto is_directory_bytes =
       std::vector<std::byte>(bytes.begin() + NAME_SIZE + SIZE_SIZE + FIRST_CLUSTER_INDEX_SIZE,
                              bytes.begin() + NAME_SIZE + SIZE_SIZE + FIRST_CLUSTER_INDEX_SIZE + IS_DIRECTORY_SIZE);
+
   auto is_directory = Converter::to_bool(is_directory_bytes);
 
   return FileData(name, FileSize{size}, first_cluster_index, is_directory);
+}
+
+auto FileData::to_string() const -> std::string {
+  std::string is_directory_string = is_directory_ ? "true" : "false";
+  return "FileData{name: " + name_ + ", size: " + std::to_string(size_) +
+         ", first_cluster_index: " + std::to_string(first_cluster_index_) + ", is_directory: " + is_directory_string +
+         "}";
 }
 
 auto FileData::file_data_size() noexcept -> std::uint64_t { return FILE_DATA_SIZE; }
