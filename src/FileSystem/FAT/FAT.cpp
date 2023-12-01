@@ -45,7 +45,7 @@ auto FAT::empty_entry_bytes() -> std::vector<std::byte> {
 
 auto FAT::entry_size() -> std::uint64_t { return ENTRY_SIZE; }
 
-auto FAT::pretty_print_fat(FAT const &fat) -> std::string {
+auto FAT::to_string(FAT const &fat) -> std::string {
   auto entries = fat.entries();
 
   std::ostringstream oss;
