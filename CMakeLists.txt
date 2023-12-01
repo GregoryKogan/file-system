@@ -29,6 +29,8 @@ add_executable(
     src/FileSystem/FileHandler/FileHandler.cpp
     src/FileSystem/FileHandler/FileReader/FileReader.hpp
     src/FileSystem/FileHandler/FileReader/FileReader.cpp
+    src/FileSystem/FileHandler/FileWriter/FileWriter.hpp
+    src/FileSystem/FileHandler/FileWriter/FileWriter.cpp
 )
 
 target_compile_options(

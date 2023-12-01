@@ -7,6 +7,7 @@
 #include "FSMaker/FSMaker.hpp"
 #include "FileData/FileData.hpp"
 #include "FileHandler/FileReader/FileReader.hpp"
+#include "FileHandler/FileWriter/FileWriter.hpp"
 #include <cstdint>
 #include <sstream>
 #include <string>

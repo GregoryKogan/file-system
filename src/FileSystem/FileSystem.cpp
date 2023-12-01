@@ -20,33 +20,16 @@ void FileSystem::make(std::string const &path, FSMaker::Settings const &settings
   FSMaker::make_fs(path, settings, allow_big);
 
   FileSystem file_system(path);
-  auto cluster_size = file_system.get_settings().cluster_size;
 
   auto root_dir_bytes = Directory::make_root().to_bytes();
-  std::uint64_t bytes_written = 0;
-  auto cur_cluster = file_system.fat_->allocate();
-  while (root_dir_bytes.size() - bytes_written >= cluster_size) {
-    auto cluster_offset = file_system.fat_->cluster_offset(cur_cluster, cluster_size);
-    file_system.disk_writer_->set_offset(cluster_offset);
-    std::vector<std::byte> cluster_bytes(root_dir_bytes.begin() + static_cast<std::int64_t>(bytes_written),
-                                         root_dir_bytes.begin() +
-                                             static_cast<std::int64_t>(bytes_written + cluster_size));
-    file_system.disk_writer_->write(cluster_bytes);
-    bytes_written += cluster_size;
 
-    if (bytes_written < root_dir_bytes.size()) {
-      auto next_cluster = file_system.fat_->allocate();
-      file_system.fat_->set_next(cur_cluster, next_cluster);
-      cur_cluster = next_cluster;
-    }
-  }
-  auto last_cluster_bytes =
-      std::vector<std::byte>(root_dir_bytes.begin() + static_cast<std::int64_t>(bytes_written), root_dir_bytes.end());
-  auto last_cluster_offset = file_system.fat_->cluster_offset(cur_cluster, cluster_size);
-  file_system.disk_writer_->set_offset(last_cluster_offset);
-  file_system.disk_writer_->write(last_cluster_bytes);
+  auto first_cluster = file_system.fat_->allocate();
 
-  file_system.root_dir_size_ = root_dir_bytes.size();
+  auto file_writer = FileWriter(FileData("/", FileData::FileSize{0}, first_cluster, true), FileHandler::FileOffset(0),
+                                file_system.fat_, file_system.settings_.cluster_size, file_system.disk_writer_);
+
+  auto new_file_size = file_writer.write_block(root_dir_bytes);
+  std::cout << "New file size: " << new_file_size << '\n';
 }
 
 auto FileSystem::get_settings() const noexcept -> FSMaker::Settings const & { return settings_; }
