@@ -22,11 +22,35 @@ auto FAT::entries() const -> std::vector<FATEntry> {
   return entries;
 }
 
+auto FAT::allocate() -> std::uint64_t {
+  for (std::uint64_t i = 0; i < entries_count_; ++i) {
+    if (!is_allocated(i)) {
+      auto entry = FATEntry{ClusterStatusOptions::LAST, 0};
+      disk_writer_->set_offset(DiskHandler::DiskOffset(disk_offset_.value + i * ENTRY_SIZE));
+      disk_writer_->write(to_bytes(entry));
+      return i;
+    }
+  }
+
+  throw std::runtime_error("Cannot allocate cluster");
+}
+
+auto FAT::is_allocated(std::uint64_t cluster_index) const -> bool {
+  if (cluster_index >= entries_count_) throw std::runtime_error("Invalid cluster index");
+
+  std::uint64_t cluster_disk_offset = disk_offset_.value + cluster_index * ENTRY_SIZE;
+  disk_reader_->set_offset(DiskHandler::DiskOffset(cluster_disk_offset));
+  disk_reader_->set_block_size(DiskReader::BlockSize(ENTRY_SIZE));
+  auto entry_bytes = disk_reader_->read_block();
+  auto entry = to_fat_entry(entry_bytes);
+  return entry.status != ClusterStatusOptions::FREE;
+}
+
 auto FAT::to_fat_entry(std::vector<std::byte> const &entry_bytes) -> FATEntry {
   if (entry_bytes.size() != ENTRY_SIZE) throw std::runtime_error("Invalid FAT entry size");
 
   auto status = entry_bytes[0];
-  if (status != ClusterStatusOptions::FREE && status != ClusterStatusOptions::BUSY &&
+  if (status != ClusterStatusOptions::FREE && status != ClusterStatusOptions::ALLOCATED &&
       status != ClusterStatusOptions::LAST) {
     throw std::runtime_error("Invalid FAT entry status");
   }
@@ -35,6 +59,16 @@ auto FAT::to_fat_entry(std::vector<std::byte> const &entry_bytes) -> FATEntry {
   auto next_cluster = Converter::to_uint64(next_cluster_bytes);
 
   return FATEntry{status, next_cluster};
+}
+
+auto FAT::to_bytes(FATEntry const &entry) -> std::vector<std::byte> {
+  std::vector<std::byte> bytes(ENTRY_SIZE, std::byte{0});
+  bytes[0] = entry.status;
+
+  auto next_cluster_bytes = Converter::to_bytes(entry.next_cluster);
+  std::copy(next_cluster_bytes.begin(), next_cluster_bytes.end(), bytes.begin() + 1);
+
+  return bytes;
 }
 
 auto FAT::empty_entry_bytes() -> std::vector<std::byte> {
@@ -64,7 +98,7 @@ auto FAT::to_string(FAT const &fat) -> std::string {
 auto FAT::cluster_status_to_string(std::byte status) -> std::string {
   switch (status) {
   case ClusterStatusOptions::FREE: return "FREE";
-  case ClusterStatusOptions::BUSY: return "BUSY";
+  case ClusterStatusOptions::ALLOCATED: return "ALLOCATED";
   case ClusterStatusOptions::LAST: return "LAST";
   default: throw std::runtime_error("Invalid FAT entry status");
   }

@@ -27,12 +27,17 @@ public:
   [[nodiscard]] auto entries_count() const noexcept -> std::uint64_t;
   [[nodiscard]] auto entries() const -> std::vector<FATEntry>;
 
+  [[nodiscard]] auto allocate() -> std::uint64_t;
+
   static auto empty_entry_bytes() -> std::vector<std::byte>;
   static auto entry_size() -> std::uint64_t;
   static auto to_string(FAT const &fat) -> std::string;
 
 private:
+  [[nodiscard]] auto is_allocated(std::uint64_t cluster_index) const -> bool;
+
   static auto to_fat_entry(std::vector<std::byte> const &entry_bytes) -> FATEntry;
+  static auto to_bytes(FATEntry const &entry) -> std::vector<std::byte>;
   static auto cluster_status_to_string(std::byte status) -> std::string;
 };
 
@@ -42,7 +47,7 @@ struct FAT::FATEntry {
 };
 
 struct FAT::ClusterStatusOptions {
-  static const std::byte FREE = std::byte{238};
-  static const std::byte BUSY = std::byte{187};
-  static const std::byte LAST = std::byte{255};
+  static const std::byte FREE = std::byte{255};
+  static const std::byte ALLOCATED = std::byte{170};
+  static const std::byte LAST = std::byte{238};
 };
