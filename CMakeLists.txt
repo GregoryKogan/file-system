@@ -7,6 +7,8 @@ add_executable(
     fs 
     src/main.cpp
 
+    src/CLI/CLI.hpp
+    src/CLI/CLI.cpp
     src/FileSystem/FileSystem.hpp
     src/FileSystem/FileSystem.cpp
     src/FileSystem/DiskHandler/DiskHandler.hpp
