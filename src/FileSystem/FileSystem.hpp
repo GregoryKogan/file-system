@@ -36,8 +36,8 @@ public:
   [[nodiscard]] auto get_settings() const noexcept -> FSMaker::Settings const &;
 
   [[nodiscard]] auto ls(std::string const &path) const -> std::vector<FileData>;
-  [[nodiscard]] static auto dirname(std::string const &path) -> std::string;
-  [[nodiscard]] static auto basename(std::string const &path) -> std::string;
+  [[nodiscard]] auto dirname(std::string const &path) -> std::string;
+  [[nodiscard]] auto basename(std::string const &path) -> std::string;
 
   friend auto operator<<(std::ostream &out_stream, FileSystem const &file_system) -> std::ostream &;
 

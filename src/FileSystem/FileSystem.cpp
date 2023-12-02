@@ -34,11 +34,11 @@ auto FileSystem::ls(std::string const &path) const -> std::vector<FileData> {
   return root_dir.files();
 }
 
-auto FileSystem::dirname(std::string const &path) const -> std::string {
+auto FileSystem::dirname(std::string const &path) -> std::string {
   return PathResolver::dirname(path, path_resolver_->delimiter());
 }
 
-auto FileSystem::basename(std::string const &path) const -> std::string {
+auto FileSystem::basename(std::string const &path) -> std::string {
   return PathResolver::basename(path, path_resolver_->delimiter());
 }
 
