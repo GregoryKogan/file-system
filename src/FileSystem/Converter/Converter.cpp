@@ -42,7 +42,10 @@ auto Converter::to_bytes(std::string const &value, std::uint64_t size) -> std::v
 
 auto Converter::to_string(std::vector<std::byte> const &bytes) -> std::string {
   std::string string;
-  for (std::byte byte : bytes) string.push_back(static_cast<char>(byte));
+  for (std::byte byte : bytes) {
+    if (byte == std::byte{0}) break;
+    string.push_back(static_cast<char>(byte));
+  }
 
   return string;
 }

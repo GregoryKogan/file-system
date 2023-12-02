@@ -8,6 +8,7 @@
 #include "FileData/FileData.hpp"
 #include "FileHandler/FileReader/FileReader.hpp"
 #include "FileHandler/FileWriter/FileWriter.hpp"
+#include "PathResolver/PathResolver.hpp"
 #include <cstdint>
 #include <sstream>
 #include <string>
@@ -23,6 +24,10 @@ class FileSystem {
 
   std::shared_ptr<FAT> fat_;
 
+  std::unique_ptr<PathResolver> path_resolver_;
+
+  std::shared_ptr<FileData> working_dir_;
+
 public:
   explicit FileSystem(std::string const &path);
 
@@ -31,10 +36,15 @@ public:
   [[nodiscard]] auto get_settings() const noexcept -> FSMaker::Settings const &;
 
   [[nodiscard]] auto ls(std::string const &path) const -> std::vector<FileData>;
+  [[nodiscard]] static auto dirname(std::string const &path) -> std::string;
+  [[nodiscard]] static auto basename(std::string const &path) -> std::string;
 
   friend auto operator<<(std::ostream &out_stream, FileSystem const &file_system) -> std::ostream &;
 
 private:
   void read_settings();
+  [[nodiscard]] auto is_root_dir_created() const noexcept -> bool;
+  auto create_root_dir() -> void;
   [[nodiscard]] auto root_dir_size() const noexcept -> std::uint64_t;
+  [[nodiscard]] auto root_dir_file_data() const -> FileData;
 };

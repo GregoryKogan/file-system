@@ -33,6 +33,13 @@ auto Directory::to_bytes() const -> std::vector<std::byte> {
 
 auto Directory::files() const -> std::vector<FileData> { return files_; }
 
+auto Directory::find(std::string const &name) const -> std::optional<FileData> {
+  for (auto const &file : files_) {
+    if (file.name().length() == name.length()) { return file; }
+  }
+  return {};
+}
+
 auto Directory::make_root() -> Directory {
   auto current_dir = FileData(".", FileData::FileSize{FileData::file_data_size() * 2}, 0, true);
   auto parent_dir = FileData("..", FileData::FileSize{FileData::file_data_size() * 2}, 0, true);

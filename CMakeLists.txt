@@ -31,6 +31,8 @@ add_executable(
     src/FileSystem/FileHandler/FileReader/FileReader.cpp
     src/FileSystem/FileHandler/FileWriter/FileWriter.hpp
     src/FileSystem/FileHandler/FileWriter/FileWriter.cpp
+    src/FileSystem/PathResolver/PathResolver.hpp
+    src/FileSystem/PathResolver/PathResolver.cpp
 )
 
 target_compile_options(

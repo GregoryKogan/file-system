@@ -1,6 +1,8 @@
 #pragma once
 
 #include "../FileData/FileData.hpp"
+#include <iostream>
+#include <optional>
 
 class Directory {
   std::vector<FileData> files_;
@@ -12,6 +14,7 @@ public:
   [[nodiscard]] auto to_bytes() const -> std::vector<std::byte>;
 
   [[nodiscard]] auto files() const -> std::vector<FileData>;
+  [[nodiscard]] auto find(std::string const &name) const -> std::optional<FileData>;
 
   [[nodiscard]] static auto make_root() -> Directory;
 };
