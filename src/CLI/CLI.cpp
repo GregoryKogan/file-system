@@ -33,7 +33,9 @@ auto CLI::run() -> void {
 
     if (command == "exit") { break; }
 
-    execute(command, args);
+    try {
+      execute(command, args);
+    } catch (std::exception const &e) { std::cout << e.what() << '\n'; }
   }
 }
 
@@ -50,6 +52,8 @@ auto CLI::execute(std::string const &command, std::vector<std::string> args) -> 
     basename(std::move(args));
   } else if (command == "ls") {
     ls(std::move(args));
+  } else if (command == "mkdir") {
+    mkdir(std::move(args));
   } else {
     std::cout << "Unknown command. Type 'help' to see available commands.\n";
   }
@@ -63,6 +67,7 @@ auto CLI::help() -> void {
   std::cout << "-\t'dirname <path>' - get the directory portion of a pathname\n";
   std::cout << "-\t'basename <path>' - get the filename portion of a pathname\n";
   std::cout << "-\t'ls [-l]' - list directory contents\n";
+  std::cout << "-\t'mkdir <path>' - create a directory\n";
 }
 
 auto CLI::clear() -> void {
@@ -103,4 +108,13 @@ auto CLI::ls(std::vector<std::string> args) -> void {
 
   auto files = file_system_->ls("/");
   for (auto const &file : files) { std::cout << file.to_string(verbose) << '\n'; }
+}
+
+auto CLI::mkdir(std::vector<std::string> args) -> void {
+  if (args.size() != 1) {
+    std::cout << "Wrong number of arguments. Usage: mkdir <path>\n";
+    return;
+  }
+
+  file_system_->mkdir(args[0]);
 }

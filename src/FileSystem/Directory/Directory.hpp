@@ -16,5 +16,8 @@ public:
   [[nodiscard]] auto files() const -> std::vector<FileData>;
   [[nodiscard]] auto find(std::string const &name) const -> std::optional<FileData>;
 
+  auto add_file(FileData const &file) -> void;
+
   [[nodiscard]] static auto make_root() -> Directory;
+  [[nodiscard]] static auto make_empty(const FileData &parent_dir, std::uint64_t cluster_index) -> Directory;
 };

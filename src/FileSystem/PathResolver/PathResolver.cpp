@@ -36,6 +36,7 @@ auto PathResolver::parse(std::string const &path, std::string const &delimiter) 
 }
 
 auto PathResolver::dirname(std::string const &path, std::string const &delimiter) -> std::string {
+  if (path.find_last_of(delimiter) == std::string::npos) return "";
   return path.substr(0, path.find_last_of(delimiter));
 }
 

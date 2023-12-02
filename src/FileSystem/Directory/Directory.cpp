@@ -40,11 +40,32 @@ auto Directory::find(std::string const &name) const -> std::optional<FileData> {
   return {};
 }
 
+auto Directory::add_file(FileData const &file) -> void {
+  if (find(file.name()).has_value()) throw std::runtime_error("File already exists");
+  files_.push_back(file);
+
+  files_[0].set_size(FileData::FileSize{FileData::file_data_size() * files_.size()});
+  if (files_[0].first_cluster_index() == files_[1].first_cluster_index()) {
+    files_[1].set_size(FileData::FileSize{FileData::file_data_size() * files_.size()});
+  }
+}
+
 auto Directory::make_root() -> Directory {
   auto current_dir = FileData(".", FileData::FileSize{FileData::file_data_size() * 2}, 0, true);
   auto parent_dir = FileData("..", FileData::FileSize{FileData::file_data_size() * 2}, 0, true);
 
   auto files = std::vector<FileData>{current_dir, parent_dir};
+
+  return Directory(files);
+}
+
+auto Directory::make_empty(const FileData &parent_dir, std::uint64_t cluster_index) -> Directory {
+  if (!parent_dir.is_directory()) throw std::runtime_error("Cannot create directory in file");
+
+  auto current_dir = FileData(".", FileData::FileSize{FileData::file_data_size() * 2}, cluster_index, true);
+  auto parent_dir_ref = FileData("..", FileData::FileSize{0}, parent_dir.first_cluster_index(), true);
+
+  auto files = std::vector<FileData>{current_dir, parent_dir_ref};
 
   return Directory(files);
 }
