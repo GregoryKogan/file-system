@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../FileSystem/FileSystem.hpp"
+#include <cstdlib>
 #include <iostream>
 #include <string>
 
@@ -16,6 +17,7 @@ private:
   [[nodiscard]] static auto prompt() -> std::string;
   auto execute(std::string const &command, std::vector<std::string> args) -> void;
   static auto help() -> void;
+  static auto clear() -> void;
 
   auto dirname(std::vector<std::string> args) -> void;
   auto basename(std::vector<std::string> args) -> void;

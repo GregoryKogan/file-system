@@ -42,6 +42,8 @@ auto CLI::prompt() -> std::string { return ">>> "; }
 auto CLI::execute(std::string const &command, std::vector<std::string> args) -> void {
   if (command == "help") {
     help();
+  } else if (command == "clear") {
+    clear();
   } else if (command == "dirname") {
     dirname(std::move(args));
   } else if (command == "basename") {
@@ -57,9 +59,19 @@ auto CLI::help() -> void {
   std::cout << "Commands:\n";
   std::cout << "-\t'help' - show this message\n";
   std::cout << "-\t'exit' - exit the program\n";
+  std::cout << "-\t'clear' - clear the screen\n";
   std::cout << "-\t'dirname <path>' - get the directory portion of a pathname\n";
   std::cout << "-\t'basename <path>' - get the filename portion of a pathname\n";
   std::cout << "-\t'ls [-l]' - list directory contents\n";
+}
+
+auto CLI::clear() -> void {
+#ifdef WINDOWS
+  std::system("cls");
+#else
+  // Assume POSIX
+  std::system("clear");
+#endif
 }
 
 auto CLI::dirname(std::vector<std::string> args) -> void {
