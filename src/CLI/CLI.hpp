@@ -19,5 +19,5 @@ private:
 
   auto dirname(std::vector<std::string> args) -> void;
   auto basename(std::vector<std::string> args) -> void;
-  auto ls() -> void;
+  auto ls(std::vector<std::string> args) -> void;
 };

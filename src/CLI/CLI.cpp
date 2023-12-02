@@ -47,7 +47,7 @@ auto CLI::execute(std::string const &command, std::vector<std::string> args) -> 
   } else if (command == "basename") {
     basename(std::move(args));
   } else if (command == "ls") {
-    ls();
+    ls(std::move(args));
   } else {
     std::cout << "Unknown command. Type 'help' to see available commands.\n";
   }
@@ -59,7 +59,7 @@ auto CLI::help() -> void {
   std::cout << "-\t'exit' - exit the program\n";
   std::cout << "-\t'dirname <path>' - get the directory portion of a pathname\n";
   std::cout << "-\t'basename <path>' - get the filename portion of a pathname\n";
-  std::cout << "-\t'ls' - list directory contents\n";
+  std::cout << "-\t'ls [-l]' - list directory contents\n";
 }
 
 auto CLI::dirname(std::vector<std::string> args) -> void {
@@ -80,7 +80,15 @@ auto CLI::basename(std::vector<std::string> args) -> void {
   std::cout << file_system_->basename(args[0]) << '\n';
 }
 
-auto CLI::ls() -> void {
+auto CLI::ls(std::vector<std::string> args) -> void {
+  bool verbose = false;
+  if (args.size() == 1 && args[0] == "-l") {
+    verbose = true;
+  } else if (!args.empty()) {
+    std::cout << "Wrong number of arguments. Usage: ls [-l]\n";
+    return;
+  }
+
   auto files = file_system_->ls("/");
-  for (auto const &file : files) { std::cout << file.to_string() << '\n'; }
+  for (auto const &file : files) { std::cout << file.to_string(verbose) << '\n'; }
 }

@@ -63,11 +63,15 @@ auto FileData::from_bytes(std::vector<std::byte> const &bytes) -> FileData {
   return FileData(name, FileSize{size}, first_cluster_index, is_directory);
 }
 
-auto FileData::to_string() const -> std::string {
+auto FileData::to_string(bool verbose) const -> std::string {
+  if (!verbose) {
+    std::string is_directory_string = is_directory_ ? "/" : "";
+    return name_ + is_directory_string;
+  }
+
   std::string is_directory_string = is_directory_ ? "true" : "false";
-  return "FileData{name: " + name_ + ", size: " + std::to_string(size_) +
-         ", first_cluster_index: " + std::to_string(first_cluster_index_) + ", is_directory: " + is_directory_string +
-         "}";
+  return "FileData { name: " + name_ + ", size: " + std::to_string(size_) +
+         " bytes, first_cluster: " + std::to_string(first_cluster_index_) + ", is_dir: " + is_directory_string + " }";
 }
 
 auto FileData::file_data_size() noexcept -> std::uint64_t { return FILE_DATA_SIZE; }

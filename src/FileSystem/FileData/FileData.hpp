@@ -34,7 +34,7 @@ public:
 
   [[nodiscard]] auto to_bytes() const -> std::vector<std::byte>;
   static auto from_bytes(std::vector<std::byte> const &bytes) -> FileData;
-  [[nodiscard]] auto to_string() const -> std::string;
+  [[nodiscard]] auto to_string(bool verbose = false) const -> std::string;
 
   [[nodiscard]] static auto file_data_size() noexcept -> std::uint64_t;
 };
