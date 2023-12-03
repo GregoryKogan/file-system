@@ -22,7 +22,14 @@ add_executable(
     src/main.cpp
     ${SOURCES}
 )
-target_compile_options(${PROJECT_NAME} PRIVATE -O3)
+
+if(CMAKE_BUILD_TYPE STREQUAL "Release")
+  if(MSVC)
+    target_compile_options(${PROJECT_NAME} PRIVATE /O2)
+  else()
+    target_compile_options(${PROJECT_NAME} PRIVATE -O3)
+  endif()
+endif()
 
 add_executable(
   tests
