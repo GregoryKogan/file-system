@@ -25,7 +25,7 @@ Simple implementation of FAT file system
 - `rmdir <path>` - remove a directory
 - `mv <path> <path>` - move a file or directory
 - `cp <path> <path>` - copy a file or directory
-- `import <path> <path>` - import a file or directory from host OS
-- `export <path> <path>` - export a file or directory to host OS
+- `import <path> <path>` - import a file or directory from host file system
+- `export <path> <path>` - export a file or directory to host file system
 - `stat <path>` - show file or directory info
 - `find <path> <name>` - find a file or directory by name
