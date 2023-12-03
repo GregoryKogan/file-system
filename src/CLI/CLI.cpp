@@ -75,7 +75,7 @@ auto CLI::clear() -> void {
   std::system("cls");
 #else
   // Assume POSIX
-  std::system("clear");
+  if (std::system("clear") != 0) { std::cout << "Error while clearing the screen\n"; }
 #endif
 }
 
