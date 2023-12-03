@@ -28,6 +28,7 @@ private:
   static auto help() -> void;
   static auto clear() -> void;
 
+  auto fsinfo() -> void;
   auto dirname(std::vector<std::string> args) -> void;
   auto basename(std::vector<std::string> args) -> void;
   auto ls(std::vector<std::string> args) -> void;

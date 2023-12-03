@@ -44,6 +44,8 @@ auto CLI::execute(std::string const &command, std::vector<std::string> args) -> 
     help();
   } else if (command == "clear") {
     clear();
+  } else if (command == "fsinfo") {
+    fsinfo();
   } else if (command == "dirname") {
     dirname(std::move(args));
   } else if (command == "basename") {
@@ -62,6 +64,7 @@ auto CLI::help() -> void {
   std::cout << "-\t'help' - show this message\n";
   std::cout << "-\t'exit' - exit the program\n";
   std::cout << "-\t'clear' - clear the screen\n";
+  std::cout << "-\t'fsinfo' - show file system info\n";
   std::cout << "-\t'dirname <path>' - get the directory portion of a pathname\n";
   std::cout << "-\t'basename <path>' - get the filename portion of a pathname\n";
   std::cout << "-\t'ls [-l]' - list directory contents\n";
@@ -76,6 +79,8 @@ auto CLI::clear() -> void {
   if (std::system("clear") != 0) { std::cout << "Error while clearing the screen\n"; }
 #endif
 }
+
+auto CLI::fsinfo() -> void { std::cout << *file_system_ << '\n'; }
 
 auto CLI::dirname(std::vector<std::string> args) -> void {
   if (args.size() != 1) {
