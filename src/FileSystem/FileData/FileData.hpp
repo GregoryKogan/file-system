@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../Converter/Converter.hpp"
+#include <stdexcept>
 #include <string>
 
 class FileData {
