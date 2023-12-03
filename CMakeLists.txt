@@ -15,49 +15,21 @@ FetchContent_MakeAvailable(googletest)
 
 enable_testing()
 
-# set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin")
+file(GLOB_RECURSE SOURCES "src/**/*.cpp" "src/**/*.hpp")
 
 add_executable(
     ${PROJECT_NAME} 
     src/main.cpp
-
-    src/CLI/CLI.hpp
-    src/CLI/CLI.cpp
-    src/FileSystem/FileSystem.hpp
-    src/FileSystem/FileSystem.cpp
-    src/FileSystem/DiskHandler/DiskHandler.hpp
-    src/FileSystem/DiskHandler/DiskHandler.cpp
-    src/FileSystem/DiskHandler/DiskReader/DiskReader.hpp
-    src/FileSystem/DiskHandler/DiskReader/DiskReader.cpp
-    src/FileSystem/DiskHandler/DiskWriter/DiskWriter.hpp
-    src/FileSystem/DiskHandler/DiskWriter/DiskWriter.cpp
-    src/FileSystem/Converter/Converter.hpp
-    src/FileSystem/Converter/Converter.cpp
-    src/FileSystem/FSMaker/FSMaker.hpp
-    src/FileSystem/FSMaker/FSMaker.cpp
-    src/FileSystem/FAT/FAT.hpp
-    src/FileSystem/FAT/FAT.cpp
-    src/FileSystem/FileData/FileData.hpp
-    src/FileSystem/FileData/FileData.cpp
-    src/FileSystem/Directory/Directory.hpp
-    src/FileSystem/Directory/Directory.cpp
-    src/FileSystem/FileHandler/FileHandler.hpp
-    src/FileSystem/FileHandler/FileHandler.cpp
-    src/FileSystem/FileHandler/FileReader/FileReader.hpp
-    src/FileSystem/FileHandler/FileReader/FileReader.cpp
-    src/FileSystem/FileHandler/FileWriter/FileWriter.hpp
-    src/FileSystem/FileHandler/FileWriter/FileWriter.cpp
-    src/FileSystem/PathResolver/PathResolver.hpp
-    src/FileSystem/PathResolver/PathResolver.cpp
+    ${SOURCES}
 )
+target_compile_options(${PROJECT_NAME} PRIVATE -O3)
 
-target_compile_options(
-    ${PROJECT_NAME} PRIVATE
-    -O3
+add_executable(
+  tests
+  ${SOURCES}
+  test/path_manipulations_test.cpp
 )
-
-add_executable(hello_test test/hello_test.cpp)
-target_link_libraries(hello_test GTest::gtest_main)
+target_link_libraries(tests GTest::gtest_main)
 
 include(GoogleTest)
-gtest_discover_tests(hello_test)
+gtest_discover_tests(tests)
