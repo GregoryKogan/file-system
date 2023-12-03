@@ -21,13 +21,13 @@ protected:
 TEST_F(PathManipulationsTest, Dirname) {
   EXPECT_EQ(file_system_->dirname("/"), "/");
   EXPECT_EQ(file_system_->dirname("/a"), "/");
-  EXPECT_EQ(file_system_->dirname("/a/"), "/a");
+  EXPECT_EQ(file_system_->dirname("/a/"), "/");
   EXPECT_EQ(file_system_->dirname("/a/b"), "/a");
-  EXPECT_EQ(file_system_->dirname("/a/b/"), "/a/b");
+  EXPECT_EQ(file_system_->dirname("/a/b/"), "/a");
   EXPECT_EQ(file_system_->dirname("/a/b/c"), "/a/b");
-  EXPECT_EQ(file_system_->dirname("/a/b/c/"), "/a/b/c");
+  EXPECT_EQ(file_system_->dirname("/a/b/c/"), "/a/b");
 
-  EXPECT_TRUE(file_system_->dirname("a").empty());
+  EXPECT_EQ(file_system_->dirname("a"), ".");
 }
 
 TEST_F(PathManipulationsTest, Basename) {

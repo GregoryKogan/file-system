@@ -36,12 +36,30 @@ auto PathResolver::parse(std::string const &path, std::string const &delimiter) 
 }
 
 auto PathResolver::dirname(std::string const &path, std::string const &delimiter) -> std::string {
-  if (path.find_last_of(delimiter) == std::string::npos) return "";
-  return path.substr(0, path.find_last_of(delimiter));
+  if (path.empty()) throw std::invalid_argument("Path is empty");
+  if (path == delimiter) return path;
+
+  std::string path_copy = path;
+  if (path_copy.find_last_of(delimiter) == path_copy.size() - delimiter.size()) {
+    path_copy = path_copy.substr(0, path_copy.size() - delimiter.size());
+  }
+
+  auto last_delimiter = path_copy.find_last_of(delimiter);
+  if (last_delimiter == std::string::npos) return ".";
+  if (last_delimiter == 0) return delimiter;
+  return path_copy.substr(0, last_delimiter);
 }
 
 auto PathResolver::basename(std::string const &path, std::string const &delimiter) -> std::string {
-  return path.substr(path.find_last_of(delimiter) + 1);
+  if (path.empty()) throw std::invalid_argument("Path is empty");
+  if (path == delimiter) return path;
+
+  std::string path_copy = path;
+  if (path_copy.find_last_of(delimiter) == path_copy.size() - delimiter.size()) {
+    path_copy = path_copy.substr(0, path_copy.size() - delimiter.size());
+  }
+
+  return path_copy.substr(path_copy.find_last_of(delimiter) + 1);
 }
 
 auto PathResolver::get_file(std::vector<std::string> const &path_tokens, FileData const &file_data) const
