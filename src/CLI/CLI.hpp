@@ -1,15 +1,24 @@
 #pragma once
 
 #include "../FileSystem/FileSystem.hpp"
+#include <cstdio>
 #include <cstdlib>
 #include <iostream>
 #include <string>
+#include <utility>
 
 class CLI {
   std::unique_ptr<FileSystem> file_system_;
 
 public:
   CLI();
+  CLI(CLI const &) = delete;
+  CLI(CLI &&) = delete;
+
+  ~CLI();
+
+  auto operator=(CLI const &) -> CLI & = delete;
+  auto operator=(CLI &&) -> CLI & = delete;
 
   auto run() -> void;
 

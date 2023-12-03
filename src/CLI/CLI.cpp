@@ -1,16 +1,14 @@
 #include "CLI.hpp"
 
-#include <utility>
-
 CLI::CLI() {
-  const std::string PATH = "test.fs";
   const uint64_t SIZE = 1024;
   const uint64_t CLUSTER_SIZE = 64;
 
-  FileSystem::make(PATH, {SIZE, CLUSTER_SIZE});
-
-  file_system_ = std::make_unique<FileSystem>(PATH);
+  FileSystem::make("cli.fs", {SIZE, CLUSTER_SIZE});
+  file_system_ = std::make_unique<FileSystem>("cli.fs");
 }
+
+CLI::~CLI() { std::remove("cli.fs"); }
 
 auto CLI::run() -> void {
   std::cout << "Welcome to the File System!\n";
