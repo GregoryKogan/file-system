@@ -1,7 +1,7 @@
 #include "../src/FileSystem/FileSystem.hpp"
 #include <gtest/gtest.h>
 
-class PathManipulationsTest : public testing::Test {
+class DirnameBasenameTest : public testing::Test {
 protected:
   // NOLINTBEGIN(cppcoreguidelines-non-private-member-variables-in-classes)
   std::string const PATH = "test.fs";
@@ -18,7 +18,7 @@ protected:
   }
 };
 
-TEST_F(PathManipulationsTest, Dirname) {
+TEST_F(DirnameBasenameTest, Dirname) {
   EXPECT_EQ(file_system_->dirname("/"), "/");
   EXPECT_EQ(file_system_->dirname("/a"), "/");
   EXPECT_EQ(file_system_->dirname("/a/"), "/");
@@ -30,7 +30,7 @@ TEST_F(PathManipulationsTest, Dirname) {
   EXPECT_EQ(file_system_->dirname("a"), ".");
 }
 
-TEST_F(PathManipulationsTest, Basename) {
+TEST_F(DirnameBasenameTest, Basename) {
   EXPECT_EQ(file_system_->basename("/"), "/");
   EXPECT_EQ(file_system_->basename("/a"), "a");
   EXPECT_EQ(file_system_->basename("/a/"), "a");
@@ -42,7 +42,7 @@ TEST_F(PathManipulationsTest, Basename) {
   EXPECT_EQ(file_system_->basename("a"), "a");
 }
 
-TEST_F(PathManipulationsTest, DirnameMeaningfulFilenames) {
+TEST_F(DirnameBasenameTest, DirnameMeaningfulFilenames) {
   EXPECT_EQ(file_system_->dirname("/user"), "/");
   EXPECT_EQ(file_system_->dirname("/user/"), "/");
   EXPECT_EQ(file_system_->dirname("/user/desktop"), "/user");
@@ -51,7 +51,7 @@ TEST_F(PathManipulationsTest, DirnameMeaningfulFilenames) {
   EXPECT_EQ(file_system_->dirname("/user/desktop/file.txt/"), "/user/desktop");
 }
 
-TEST_F(PathManipulationsTest, BasenameMeaningfulFilenames) {
+TEST_F(DirnameBasenameTest, BasenameMeaningfulFilenames) {
   EXPECT_EQ(file_system_->basename("/user"), "user");
   EXPECT_EQ(file_system_->basename("/user/"), "user");
   EXPECT_EQ(file_system_->basename("/user/desktop"), "desktop");
@@ -60,25 +60,23 @@ TEST_F(PathManipulationsTest, BasenameMeaningfulFilenames) {
   EXPECT_EQ(file_system_->basename("/user/desktop/file.txt/"), "file.txt");
 }
 
-TEST_F(PathManipulationsTest, DirnameEmpty) {
-  EXPECT_THROW(auto res = file_system_->dirname(""), std::invalid_argument);
-}
+TEST_F(DirnameBasenameTest, DirnameEmpty) { EXPECT_THROW(auto res = file_system_->dirname(""), std::invalid_argument); }
 
-TEST_F(PathManipulationsTest, BasenameEmpty) {
+TEST_F(DirnameBasenameTest, BasenameEmpty) {
   EXPECT_THROW(auto res = file_system_->basename(""), std::invalid_argument);
 }
 
-TEST_F(PathManipulationsTest, DirnameRoot) { EXPECT_EQ(file_system_->dirname("/"), "/"); }
+TEST_F(DirnameBasenameTest, DirnameRoot) { EXPECT_EQ(file_system_->dirname("/"), "/"); }
 
-TEST_F(PathManipulationsTest, BasenameRoot) { EXPECT_EQ(file_system_->basename("/"), "/"); }
+TEST_F(DirnameBasenameTest, BasenameRoot) { EXPECT_EQ(file_system_->basename("/"), "/"); }
 
-TEST_F(PathManipulationsTest, DirnameLong) {
+TEST_F(DirnameBasenameTest, DirnameLong) {
   std::string const path = "/a/b/c/d/e/f/g/h/i/j/k/l/m/n/o/p/q/r/s/t/u/v/w/x/y/z";
 
   EXPECT_EQ(file_system_->dirname(path), "/a/b/c/d/e/f/g/h/i/j/k/l/m/n/o/p/q/r/s/t/u/v/w/x/y");
 }
 
-TEST_F(PathManipulationsTest, BasenameLong) {
+TEST_F(DirnameBasenameTest, BasenameLong) {
   std::string const path = "/a/b/c/d/e/f/g/h/i/j/k/l/m/n/o/p/q/r/s/t/u/v/w/x/y/z";
 
   EXPECT_EQ(file_system_->basename(path), "z");
