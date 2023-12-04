@@ -23,7 +23,7 @@ public:
 
   FileData(std::string name, FileSize size, std::uint64_t first_cluster_index, bool is_directory);
 
-  [[nodiscard]] auto name() const noexcept -> std::string;
+  [[nodiscard]] auto name() const -> std::string;
   [[nodiscard]] auto size() const noexcept -> FileSize;
   [[nodiscard]] auto first_cluster_index() const noexcept -> std::uint64_t;
   [[nodiscard]] auto is_directory() const noexcept -> bool;

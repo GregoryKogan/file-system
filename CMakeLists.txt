@@ -38,6 +38,7 @@ add_executable(
   test/converter.cpp
   test/directory.cpp
   test/fat.cpp
+  test/file_data.cpp
 )
 target_link_libraries(tests GTest::gtest_main)
 

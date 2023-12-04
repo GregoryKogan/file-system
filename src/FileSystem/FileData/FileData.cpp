@@ -4,7 +4,7 @@ FileData::FileData(std::string name, FileSize size, std::uint64_t first_cluster_
     : name_(std::move(name)), size_(size.bytes), first_cluster_index_(first_cluster_index),
       is_directory_(is_directory) {}
 
-auto FileData::name() const noexcept -> std::string { return name_; }
+auto FileData::name() const -> std::string { return name_; }
 
 auto FileData::size() const noexcept -> FileSize { return FileSize{size_}; }
 
