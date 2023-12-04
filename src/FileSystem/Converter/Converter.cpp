@@ -17,7 +17,7 @@ auto Converter::to_bytes(std::uint64_t value) -> std::vector<std::byte> {
 auto Converter::to_uint64(const std::vector<std::byte> &bytes) -> std::uint64_t {
   const uint8_t BYTES_IN_UINT64 = 8;
 
-  if (bytes.size() != BYTES_IN_UINT64) throw std::runtime_error("Invalid bytes size");
+  if (bytes.size() != BYTES_IN_UINT64) throw std::invalid_argument("Invalid bytes size");
 
   std::uint64_t value = 0;
 
@@ -33,7 +33,7 @@ auto Converter::to_bytes(std::string const &value, std::uint64_t size) -> std::v
   for (char character : value) bytes.push_back(static_cast<std::byte>(character));
 
   if (size != 0) {
-    if (bytes.size() > size) throw std::runtime_error("Invalid string size");
+    if (bytes.size() > size) throw std::invalid_argument("Invalid string size");
     bytes.resize(size, std::byte{0});
   }
 
@@ -61,9 +61,9 @@ auto Converter::to_bytes(bool value) -> std::vector<std::byte> {
 }
 
 auto Converter::to_bool(std::vector<std::byte> const &bytes) -> bool {
-  if (bytes.size() != 1) throw std::runtime_error("Invalid bytes size");
+  if (bytes.size() != 1) throw std::invalid_argument("Invalid bytes size");
 
   if (bytes[0] == std::byte{0}) return false;
   if (bytes[0] == std::byte{1}) return true;
-  throw std::runtime_error("Invalid bool value");
+  throw std::invalid_argument("Invalid bool value");
 }

@@ -34,7 +34,8 @@ endif()
 add_executable(
   tests
   ${SOURCES}
-  test/path_manipulations_test.cpp
+  test/dirname_basename.cpp
+  test/converter.cpp
 )
 target_link_libraries(tests GTest::gtest_main)
 
