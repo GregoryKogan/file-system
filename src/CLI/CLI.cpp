@@ -110,7 +110,7 @@ auto CLI::ls(std::vector<std::string> args) -> void {
   }
 
   auto files = file_system_->ls("/");
-  for (auto const &file : files) { std::cout << file.to_string(verbose) << '\n'; }
+  for (auto const &file : files) { std::cout << file.to_string("/", verbose) << '\n'; }
 }
 
 auto CLI::mkdir(std::vector<std::string> args) -> void {

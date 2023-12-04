@@ -1,5 +1,7 @@
 #include "FileData.hpp"
 
+#include <utility>
+
 FileData::FileData(std::string name, FileSize size, std::uint64_t first_cluster_index, bool is_directory)
     : name_(std::move(name)), size_(size.bytes), first_cluster_index_(first_cluster_index),
       is_directory_(is_directory) {}
@@ -63,9 +65,9 @@ auto FileData::from_bytes(std::vector<std::byte> const &bytes) -> FileData {
   return FileData(name, FileSize{size}, first_cluster_index, is_directory);
 }
 
-auto FileData::to_string(bool verbose) const -> std::string {
+auto FileData::to_string(std::string delimiter, bool verbose) const -> std::string {
   if (!verbose) {
-    std::string is_directory_string = is_directory_ ? "/" : "";
+    std::string is_directory_string = is_directory_ ? std::move(delimiter) : "";
     return name_ + is_directory_string;
   }
 

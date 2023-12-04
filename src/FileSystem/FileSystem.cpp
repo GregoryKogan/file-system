@@ -17,7 +17,7 @@ FileSystem::FileSystem(std::string const &path) {
   path_resolver_ = std::make_unique<PathResolver>(PATH_DELIMITER, disk_reader_, fat_, settings_.cluster_size);
 
   if (!is_root_dir_created()) create_root_dir();
-  working_dir_ = std::make_shared<FileData>("/", FileData::FileSize{root_dir_size()}, 0, true);
+  working_dir_ = std::make_shared<FileData>(path_resolver_->delimiter(), FileData::FileSize{root_dir_size()}, 0, true);
 }
 
 void FileSystem::make(std::string const &path, FSMaker::Settings const &settings, bool allow_big) {
@@ -27,9 +27,12 @@ void FileSystem::make(std::string const &path, FSMaker::Settings const &settings
 auto FileSystem::get_settings() const noexcept -> FSMaker::Settings const & { return settings_; }
 
 auto FileSystem::ls(std::string const &path) const -> std::vector<FileData> {
+  if (path != path_resolver_->delimiter()) throw std::invalid_argument("Can ls only root directory");
+
   auto size = root_dir_size();
-  auto file_reader = FileReader(FileData("/", FileData::FileSize{size}, 0, true), FileHandler::FileOffset(0), fat_,
-                                settings_.cluster_size, disk_reader_, FileReader::BlockSize(size));
+  auto file_reader =
+      FileReader(FileData(path_resolver_->delimiter(), FileData::FileSize{size}, 0, true), FileHandler::FileOffset(0),
+                 fat_, settings_.cluster_size, disk_reader_, FileReader::BlockSize(size));
   auto root_dir = Directory::from_bytes(file_reader.read_block());
   return root_dir.files();
 }
@@ -44,11 +47,11 @@ auto FileSystem::basename(std::string const &path) -> std::string {
 
 auto FileSystem::mkdir(std::string const &path) -> void {
   auto parent_dir_data = get_parent_dir_data(path);
-  if (!parent_dir_data.has_value()) throw std::runtime_error("Cannot create directory in non-existing directory");
-  if (!parent_dir_data.value().is_directory()) throw std::runtime_error("Cannot create directory in file");
+  if (!parent_dir_data.has_value()) throw std::invalid_argument("Cannot create directory in non-existing directory");
+  if (!parent_dir_data.value().is_directory()) throw std::invalid_argument("Cannot create directory in file");
 
   auto dir_name = basename(path);
-  if (search(dir_name).has_value()) throw std::runtime_error("Directory already exists");
+  if (search(dir_name).has_value()) throw std::invalid_argument("Directory already exists");
 
   auto new_dir_data = write_new_dir(parent_dir_data.value(), dir_name);
 
@@ -70,8 +73,8 @@ auto FileSystem::is_root_dir_created() const noexcept -> bool { return fat_->is_
 
 auto FileSystem::create_root_dir() -> void {
   auto first_cluster = fat_->allocate();
-  auto file_writer = FileWriter(FileData("/", FileData::FileSize{0}, first_cluster, true), FileHandler::FileOffset(0),
-                                fat_, settings_.cluster_size, disk_writer_);
+  auto file_writer = FileWriter(FileData(path_resolver_->delimiter(), FileData::FileSize{0}, first_cluster, true),
+                                FileHandler::FileOffset(0), fat_, settings_.cluster_size, disk_writer_);
 
   auto root_dir_bytes = Directory::make_root().to_bytes();
   file_writer.write_block(root_dir_bytes);
@@ -79,14 +82,15 @@ auto FileSystem::create_root_dir() -> void {
 
 auto FileSystem::root_dir_size() const noexcept -> std::uint64_t {
   auto file_reader =
-      FileReader(FileData("/", FileData::FileSize{FileData::file_data_size()}, 0, true), FileHandler::FileOffset(0),
-                 fat_, settings_.cluster_size, disk_reader_, FileReader::BlockSize(FileData::file_data_size()));
+      FileReader(FileData(path_resolver_->delimiter(), FileData::FileSize{FileData::file_data_size()}, 0, true),
+                 FileHandler::FileOffset(0), fat_, settings_.cluster_size, disk_reader_,
+                 FileReader::BlockSize(FileData::file_data_size()));
   auto root_dir_file_data = FileData::from_bytes(file_reader.read_block());
   return root_dir_file_data.size().bytes;
 }
 
 auto FileSystem::root_dir_file_data() const -> FileData {
-  return FileData("/", FileData::FileSize{root_dir_size()}, 0, true);
+  return FileData(path_resolver_->delimiter(), FileData::FileSize{root_dir_size()}, 0, true);
 }
 
 auto FileSystem::search(std::string const &path) const -> std::optional<FileData> {
@@ -95,7 +99,6 @@ auto FileSystem::search(std::string const &path) const -> std::optional<FileData
 
 auto FileSystem::get_parent_dir_data(std::string const &path) -> std::optional<FileData> {
   auto parent_dir_path = dirname(path);
-  std::cout << "Parent dir path: " << parent_dir_path << '\n';
   return search(parent_dir_path);
 }
 
@@ -120,6 +123,10 @@ auto FileSystem::update_parent_dir(FileData const &parent_dir_data, FileData con
   auto parent_dir_writer =
       FileWriter(parent_dir_data, FileHandler::FileOffset(0), fat_, settings_.cluster_size, disk_writer_);
   parent_dir_writer.write_block(parent_dir.to_bytes());
+
+  if (parent_dir_data.first_cluster_index() == working_dir_->first_cluster_index()) {
+    working_dir_->set_size(FileData::FileSize{parent_dir.to_bytes().size()});
+  }
 }
 
 auto operator<<(std::ostream &out_stream, FileSystem const &file_system) -> std::ostream & {

@@ -34,11 +34,13 @@ endif()
 add_executable(
   tests
   ${SOURCES}
-  test/dirname_basename.cpp
   test/converter.cpp
   test/directory.cpp
   test/fat.cpp
   test/file_data.cpp
+  test/dirname_basename.cpp
+  test/ls.cpp
+  test/mkdir.cpp
 )
 target_link_libraries(tests GTest::gtest_main)
 
