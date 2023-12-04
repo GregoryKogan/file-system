@@ -16,6 +16,8 @@ protected:
 
     file_system_ = std::make_unique<FileSystem>(PATH);
   }
+
+  void TearDown() override { std::filesystem::remove(PATH); }
 };
 
 TEST_F(DirnameBasenameTest, Dirname) {

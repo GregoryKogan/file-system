@@ -23,6 +23,8 @@ protected:
     fat_ = std::make_shared<FAT>(disk_reader, disk_writer, DiskHandler::DiskOffset(FSMaker::fat_offset()),
                                  FSMaker::calculate_fat_entries_count({size, cluster_size}));
   }
+
+  void TearDown() override { std::filesystem::remove(path); }
 };
 
 TEST_F(FATTest, EntriesCount) {
