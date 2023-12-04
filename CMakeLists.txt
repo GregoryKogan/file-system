@@ -37,6 +37,7 @@ add_executable(
   test/dirname_basename.cpp
   test/converter.cpp
   test/directory.cpp
+  test/fat.cpp
 )
 target_link_libraries(tests GTest::gtest_main)
 

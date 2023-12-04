@@ -25,7 +25,6 @@ public:
                DiskHandler::DiskOffset offset, std::uint64_t entries_count);
 
   [[nodiscard]] auto entries_count() const noexcept -> std::uint64_t;
-  [[nodiscard]] auto entries() const -> std::vector<FATEntry>;
 
   [[nodiscard]] auto allocate() -> std::uint64_t;
   [[nodiscard]] auto allocate(std::uint64_t clusters_count) -> std::uint64_t;
@@ -43,6 +42,7 @@ public:
 private:
   [[nodiscard]] auto can_allocate(std::uint64_t clusters_count) const -> bool;
 
+  [[nodiscard]] auto entries() const -> std::vector<FATEntry>;
   [[nodiscard]] auto get_entry(std::uint64_t cluster_index) const -> FATEntry;
   void set_entry(std::uint64_t cluster_index, FATEntry const &entry);
 
