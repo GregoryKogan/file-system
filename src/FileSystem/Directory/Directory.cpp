@@ -51,12 +51,8 @@ auto Directory::add_file(FileData const &file) -> void {
 }
 
 auto Directory::make_root() -> Directory {
-  auto current_dir = FileData(".", FileData::FileSize{FileData::file_data_size() * 2}, 0, true);
-  auto parent_dir = FileData("..", FileData::FileSize{FileData::file_data_size() * 2}, 0, true);
-
-  auto files = std::vector<FileData>{current_dir, parent_dir};
-
-  return Directory(files);
+  auto parent_dir = FileData("..", FileData::FileSize{0}, 0, true);
+  return make_empty(parent_dir, 0);
 }
 
 auto Directory::make_empty(const FileData &parent_dir, std::uint64_t cluster_index) -> Directory {
