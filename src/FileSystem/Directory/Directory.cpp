@@ -35,7 +35,7 @@ auto Directory::files() const -> std::vector<FileData> { return files_; }
 
 auto Directory::find(std::string const &name) const -> std::optional<FileData> {
   for (auto const &file : files_) {
-    if (file.name().length() == name.length()) { return file; }
+    if (file.name() == name) { return file; }
   }
   return {};
 }
