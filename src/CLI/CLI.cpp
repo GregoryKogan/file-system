@@ -5,7 +5,7 @@ CLI::CLI() {
   const uint64_t CLUSTER_SIZE = 64;
 
   FileSystem::make("cli.fs", {SIZE, CLUSTER_SIZE});
-  file_system_ = std::make_unique<FileSystem>("cli.fs");
+  file_system_ = FileSystem("cli.fs");
 }
 
 CLI::~CLI() { std::remove("cli.fs"); }
@@ -80,7 +80,7 @@ auto CLI::clear() -> void {
 #endif
 }
 
-auto CLI::fsinfo() -> void { std::cout << *file_system_ << '\n'; }
+auto CLI::fsinfo() -> void { std::cout << file_system_ << '\n'; }
 
 auto CLI::dirname(std::vector<std::string> args) -> void {
   if (args.size() != 1) {
@@ -88,7 +88,7 @@ auto CLI::dirname(std::vector<std::string> args) -> void {
     return;
   }
 
-  std::cout << file_system_->dirname(args[0]) << '\n';
+  std::cout << file_system_.dirname(args[0]) << '\n';
 }
 
 auto CLI::basename(std::vector<std::string> args) -> void {
@@ -97,20 +97,37 @@ auto CLI::basename(std::vector<std::string> args) -> void {
     return;
   }
 
-  std::cout << file_system_->basename(args[0]) << '\n';
+  std::cout << file_system_.basename(args[0]) << '\n';
 }
 
 auto CLI::ls(std::vector<std::string> args) -> void {
   bool verbose = false;
-  if (args.size() == 1 && args[0] == "-l") {
-    verbose = true;
-  } else if (!args.empty()) {
-    std::cout << "Wrong number of arguments. Usage: ls [-l]\n";
+
+  std::vector<Metadata> files;
+
+  if (args.empty()) {
+    files = file_system_.ls(".");
+  } else if (args.size() == 1) {
+    if (args[0] == "-l") {
+      verbose = true;
+      files = file_system_.ls(".");
+    } else {
+      files = file_system_.ls(args[0]);
+    }
+  } else if (args.size() == 2) {
+    if (args[1] == "-l") {
+      verbose = true;
+      files = file_system_.ls(args[0]);
+    } else {
+      std::cout << "Wrong arguments. Usage: ls [-l] <path>\n";
+      return;
+    }
+  } else {
+    std::cout << "Wrong number of arguments. Usage: ls [-l] <path>\n";
     return;
   }
 
-  auto files = file_system_->ls("/");
-  for (auto const &file : files) { std::cout << file.to_string("/", verbose) << '\n'; }
+  for (auto const &file : files) { std::cout << Metadata::to_string(file, verbose) << '\n'; }
 }
 
 auto CLI::mkdir(std::vector<std::string> args) -> void {
@@ -119,5 +136,5 @@ auto CLI::mkdir(std::vector<std::string> args) -> void {
     return;
   }
 
-  file_system_->mkdir(args[0]);
+  file_system_.mkdir(args[0]);
 }

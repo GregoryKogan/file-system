@@ -83,7 +83,7 @@ auto Metadata::get_metadata_size() noexcept -> std::uint64_t {
   return NAME_SIZE + SIZE_SIZE + FIRST_CLUSTER_SIZE + PARENT_FIRST_CLUSTER_SIZE + IS_DIRECTORY_SIZE;
 }
 
-auto Metadata::to_string(Metadata const &metadata) -> std::string {
+auto Metadata::to_string(Metadata const &metadata, bool verbose) -> std::string {
   std::ostringstream oss;
 
   if (metadata.is_directory()) {
@@ -92,7 +92,12 @@ auto Metadata::to_string(Metadata const &metadata) -> std::string {
     oss << "F";
   }
   oss << " " << metadata.get_name();
-  oss << ", " << metadata.get_size() << "b";
+
+  if (verbose) {
+    oss << ", " << metadata.get_size() << "b";
+    oss << ", fc: " << metadata.get_first_cluster();
+    oss << ", pfc: " << metadata.get_parent_first_cluster();
+  }
 
   return oss.str();
 }

@@ -9,9 +9,10 @@ auto FileWriter::write(const std::vector<std::byte> &bytes) -> void {
   auto meta = get_metadata_handler().read_metadata();
 
   auto new_size = byte_writer_.write_bytes(Metadata::get_metadata_size() + get_offset() + get_handled_size(), bytes);
+  auto actual_size = new_size - Metadata::get_metadata_size();
 
-  if (new_size > meta.get_size()) {
-    meta.set_size(new_size);
+  if (actual_size > meta.get_size()) {
+    meta.set_size(actual_size);
     get_metadata_handler().write_metadata(meta);
   }
 }

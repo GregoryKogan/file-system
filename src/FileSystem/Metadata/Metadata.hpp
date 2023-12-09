@@ -39,5 +39,5 @@ public:
 
   [[nodiscard]] static auto get_metadata_size() noexcept -> std::uint64_t;
 
-  [[nodiscard]] auto static to_string(Metadata const &metadata) -> std::string;
+  [[nodiscard]] auto static to_string(Metadata const &metadata, bool verbose = false) -> std::string;
 };

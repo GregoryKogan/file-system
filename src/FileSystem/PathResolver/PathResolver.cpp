@@ -70,6 +70,13 @@ auto PathResolver::get_file(std::vector<std::string> const &path_tokens, std::ui
   auto file_data = metadata_handler.read_metadata();
   if (!file_data.is_directory()) return {};
 
+  if (path_tokens[0] == ".")
+    return get_file(std::vector<std::string>(path_tokens.begin() + 1, path_tokens.end()), file_cluster);
+  if (path_tokens[0] == "..") {
+    return get_file(std::vector<std::string>(path_tokens.begin() + 1, path_tokens.end()),
+                    file_data.get_parent_first_cluster());
+  }
+
   auto file_reader = handler_builder_.build_file_reader(file_cluster);
   file_reader.set_block_size(file_data.get_size());
 

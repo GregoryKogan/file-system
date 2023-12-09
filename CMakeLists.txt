@@ -16,7 +16,6 @@ FetchContent_MakeAvailable(googletest)
 enable_testing()
 
 file(GLOB_RECURSE SOURCES "src/**/*.cpp" "src/**/*.hpp")
-
 add_executable(
     ${PROJECT_NAME} 
     src/main.cpp
@@ -31,16 +30,11 @@ if(CMAKE_BUILD_TYPE STREQUAL "Release")
   endif()
 endif()
 
+file(GLOB_RECURSE TESTS_SOURCES "test/*.cpp")
 add_executable(
   tests
   ${SOURCES}
-  test/converter.cpp
-  test/directory.cpp
-  test/fat.cpp
-  test/file_data.cpp
-  test/dirname_basename.cpp
-  test/ls.cpp
-  test/mkdir.cpp
+  ${TESTS_SOURCES}
 )
 target_link_libraries(tests GTest::gtest_main)
 

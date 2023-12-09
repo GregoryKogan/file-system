@@ -32,16 +32,17 @@ class FileSystem {
   std::uint64_t working_dir_cluster_ = 0;
 
 public:
+  FileSystem() = default;
   explicit FileSystem(std::string const &path);
 
   static void make(std::string const &path, FSMaker::Settings const &settings, bool allow_big = false);
 
   [[nodiscard]] auto get_settings() const noexcept -> FSMaker::Settings const &;
 
-  // [[nodiscard]] auto ls(std::string const &path) const -> std::vector<Metadata>;
-  // [[nodiscard]] auto dirname(std::string const &path) -> std::string;
-  // [[nodiscard]] auto basename(std::string const &path) -> std::string;
-  // auto mkdir(std::string const &path) -> void;
+  [[nodiscard]] auto ls(std::string const &path) const -> std::vector<Metadata>;
+  [[nodiscard]] auto dirname(std::string const &path) -> std::string;
+  [[nodiscard]] auto basename(std::string const &path) -> std::string;
+  auto mkdir(std::string const &path) -> void;
 
   friend auto operator<<(std::ostream &out_stream, FileSystem const &file_system) -> std::ostream &;
 

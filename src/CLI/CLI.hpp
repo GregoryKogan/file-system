@@ -9,7 +9,7 @@
 #include <utility>
 
 class CLI {
-  std::unique_ptr<FileSystem> file_system_;
+  FileSystem file_system_;
 
 public:
   CLI();

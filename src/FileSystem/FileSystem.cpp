@@ -28,37 +28,55 @@ void FileSystem::make(std::string const &path, FSMaker::Settings const &settings
 
 auto FileSystem::get_settings() const noexcept -> FSMaker::Settings const & { return settings_; }
 
-// auto FileSystem::ls(std::string const &path) const -> std::vector<FileData> {
-//   if (path != path_resolver_.delimiter()) throw std::invalid_argument("Can ls only root directory");
+auto FileSystem::ls(std::string const &path) const -> std::vector<Metadata> {
+  auto dir_cluster = path_resolver_.search(path, working_dir_cluster_);
+  if (!dir_cluster.has_value()) throw std::invalid_argument("Directory does not exist");
 
-//   auto size = root_dir_size();
-//   auto file_reader =
-//       FileReader(FileData(path_resolver_.delimiter(), FileData::FileSize{size}, 0, true), FileHandler::FileOffset(0),
-//                  fat_, settings_.cluster_size, disk_reader_, flockfile(size));
-//   auto root_dir = Directory::from_bytes(file_reader.read());
-//   return root_dir.files();
-// }
+  auto metadata_handler = handler_builder_.build_metadata_handler(dir_cluster.value());
+  auto dir_reader = handler_builder_.build_file_reader(dir_cluster.value());
+  dir_reader.set_block_size(metadata_handler.read_metadata().get_size());
+  auto dir = Directory::from_bytes(dir_reader.read());
 
-// auto FileSystem::dirname(std::string const &path) -> std::string {
-//   return PathResolver::dirname(path, path_resolver_.delimiter());
-// }
+  auto child_clusters = dir.list_files();
+  std::vector<Metadata> metadata_list;
+  for (auto const &child_cluster : child_clusters) {
+    auto metadata_handler = handler_builder_.build_metadata_handler(child_cluster);
+    metadata_list.push_back(metadata_handler.read_metadata());
+  }
 
-// auto FileSystem::basename(std::string const &path) -> std::string {
-//   return PathResolver::basename(path, path_resolver_.delimiter());
-// }
+  return metadata_list;
+}
 
-// static auto FileSystem::mkdir(std::string const &path) -> void {
-//   auto parent_dir_data = get_parent_dir_data(path);
-//   if (!parent_dir_data.has_value()) throw std::invalid_argument("Cannot create directory in non-existing directory");
-//   if (!parent_dir_data.value().is_directory()) throw std::invalid_argument("Cannot create directory in file");
+auto FileSystem::dirname(std::string const &path) -> std::string {
+  return PathResolver::dirname(path, path_resolver_.delimiter());
+}
 
-//   auto dir_name = basename(path);
-//   if (search(dir_name).has_value()) throw std::invalid_argument("Directory already exists");
+auto FileSystem::basename(std::string const &path) -> std::string {
+  return PathResolver::basename(path, path_resolver_.delimiter());
+}
 
-//   auto new_dir_data = write_new_dir(parent_dir_data.value(), dir_name);
+auto FileSystem::mkdir(std::string const &path) -> void {
+  auto parent_dir_path = dirname(path);
+  auto dir_name = basename(path);
 
-//   update_parent_dir(parent_dir_data.value(), new_dir_data);
-// }
+  auto parent_dir_cluster = path_resolver_.search(parent_dir_path, working_dir_cluster_);
+  if (!parent_dir_cluster.has_value()) throw std::invalid_argument("Parent directory does not exist");
+
+  auto parent_dir_metadata_handler = handler_builder_.build_metadata_handler(parent_dir_cluster.value());
+  auto parent_dir_reader = handler_builder_.build_file_reader(parent_dir_cluster.value());
+  parent_dir_reader.set_block_size(parent_dir_metadata_handler.read_metadata().get_size());
+  auto parent_dir = Directory::from_bytes(parent_dir_reader.read());
+
+  auto new_dir_cluster = fat_.allocate();
+  auto new_dir_byte_writer = handler_builder_.build_byte_writer(new_dir_cluster);
+  auto new_dir_meta = Metadata(dir_name, 0, new_dir_cluster, parent_dir_cluster.value(), true);
+  new_dir_byte_writer.write_bytes(0, new_dir_meta.to_bytes());
+
+  parent_dir.add_file(new_dir_cluster);
+
+  auto parent_dir_writer = handler_builder_.build_file_writer(parent_dir_cluster.value());
+  parent_dir_writer.write(parent_dir.to_bytes());
+}
 
 void FileSystem::read_settings() {
   disk_reader_.set_offset(0);
@@ -76,7 +94,7 @@ auto FileSystem::is_root_dir_created() noexcept -> bool { return fat_.is_allocat
 auto FileSystem::create_root_dir() -> void {
   auto first_cluster = fat_.allocate();
   auto byte_writer = handler_builder_.build_byte_writer(first_cluster);
-  auto root_meta = Metadata("root", Metadata::get_metadata_size(), first_cluster, first_cluster, true);
+  auto root_meta = Metadata("root", 0, first_cluster, first_cluster, true);
   byte_writer.write_bytes(0, root_meta.to_bytes());
 }
 

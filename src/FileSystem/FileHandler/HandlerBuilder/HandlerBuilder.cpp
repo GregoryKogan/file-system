@@ -1,11 +1,6 @@
 #include "HandlerBuilder.hpp"
 
-HandlerBuilder::HandlerBuilder() : {
-  auto disk_reader = DiskReader();
-  auto disk_writer = DiskWriter();
-  cluster_reader_ = ClusterReader(disk_reader, 0, 0);
-  cluster_writer_ = ClusterWriter(disk_writer, 0, 0);
-}
+HandlerBuilder::HandlerBuilder() : cluster_reader_(DiskReader(), 0, 0), cluster_writer_(DiskWriter(), 0, 0) {}
 
 HandlerBuilder::HandlerBuilder(DiskReader disk_reader, DiskWriter disk_writer, FAT fat,
                                std::uint64_t clusters_start_offset, std::uint64_t cluster_size)
