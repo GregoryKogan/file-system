@@ -1,27 +1,22 @@
 #include "FileHandler.hpp"
 
-FileHandler::FileHandler(FileData file_data, FileOffset offset, std::shared_ptr<FAT> fat, std::uint64_t cluster_size)
-    : fat_(std::move(fat)), cluster_size_(cluster_size), file_data_(std::move(file_data)), offset_(offset.value) {}
+FileHandler::FileHandler(std::uint64_t first_cluster, std::uint64_t offset, std::shared_ptr<FAT> fat,
+                         std::uint64_t cluster_size)
+    : first_cluster_(first_cluster), fat_(std::move(fat)), cluster_size_(cluster_size), offset_(offset) {}
 
-auto FileHandler::offset() const noexcept -> std::uint64_t { return offset_; }
+auto FileHandler::get_offset() const noexcept -> std::uint64_t { return offset_; }
 
-auto FileHandler::handled_size() const noexcept -> std::uint64_t { return handled_size_; }
-
-void FileHandler::set_offset(FileOffset offset) {
-  if (offset.value > file_data_.size().bytes) { throw std::runtime_error("Offset is out of file range"); }
-
-  offset_ = offset.value;
+void FileHandler::set_offset(std::uint64_t offset) {
+  offset_ = offset;
   handled_size_ = 0;
 }
 
-auto FileHandler::fat() const noexcept -> std::shared_ptr<FAT> { return fat_; }
+auto FileHandler::get_handled_size() const noexcept -> std::uint64_t { return handled_size_; }
 
-auto FileHandler::cluster_size() const noexcept -> std::uint64_t { return cluster_size_; }
+auto FileHandler::get_first_cluster() const noexcept -> std::uint64_t { return first_cluster_; }
 
-auto FileHandler::file_data() const noexcept -> FileData { return file_data_; }
+auto FileHandler::get_fat() const noexcept -> std::shared_ptr<FAT> { return fat_; }
 
-void FileHandler::set_file_size(std::uint64_t new_size) noexcept { file_data_.set_size(FileData::FileSize{new_size}); }
+auto FileHandler::get_cluster_size() const noexcept -> std::uint64_t { return cluster_size_; }
 
 void FileHandler::increase_handled_size(std::uint64_t size) noexcept { handled_size_ += size; }
-
-FileHandler::FileOffset::FileOffset(std::uint64_t value) : value(value) {}
