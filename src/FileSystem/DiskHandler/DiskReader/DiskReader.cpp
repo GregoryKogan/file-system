@@ -1,6 +1,8 @@
 #include "DiskReader.hpp"
 
-DiskReader::DiskReader(std::unique_ptr<std::istream> stream, std::uint64_t offset, std::uint64_t block_size)
+#include <utility>
+
+DiskReader::DiskReader(std::shared_ptr<std::istream> stream, std::uint64_t offset, std::uint64_t block_size)
     : DiskHandler(offset), is_(std::move(stream)), block_size_(block_size) {}
 
 auto DiskReader::get_block_size() const noexcept -> std::uint64_t { return block_size_; }

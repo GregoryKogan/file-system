@@ -7,11 +7,17 @@
 #include "../DiskHandler.hpp"
 
 class DiskReader : public DiskHandler {
-  std::unique_ptr<std::istream> is_;
+  std::shared_ptr<std::istream> is_;
   std::uint64_t block_size_;
 
 public:
-  DiskReader(std::unique_ptr<std::istream> stream, std::uint64_t offset, std::uint64_t block_size);
+  DiskReader(std::shared_ptr<std::istream> stream, std::uint64_t offset, std::uint64_t block_size);
+  DiskReader(const DiskReader &disk_reader) = default;
+
+  ~DiskReader() = default;
+  auto operator=(const DiskReader &other) -> DiskReader = delete;
+  DiskReader(DiskReader &&other) = default;
+  auto operator=(DiskReader &&other) -> DiskReader = delete;
 
   [[nodiscard]] auto get_block_size() const noexcept -> std::uint64_t;
   void set_block_size(std::uint64_t block_size) noexcept;

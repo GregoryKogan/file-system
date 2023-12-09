@@ -1,6 +1,8 @@
 #include "DiskWriter.hpp"
 
-DiskWriter::DiskWriter(std::unique_ptr<std::ostream> stream, std::uint64_t offset)
+#include <utility>
+
+DiskWriter::DiskWriter(std::shared_ptr<std::ostream> stream, std::uint64_t offset)
     : DiskHandler(offset), os_(std::move(stream)) {}
 
 void DiskWriter::write(const std::vector<std::byte> &bytes) const {
