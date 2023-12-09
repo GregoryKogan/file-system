@@ -82,3 +82,17 @@ auto Metadata::from_bytes(std::vector<std::byte> const &bytes) -> Metadata {
 auto Metadata::get_metadata_size() noexcept -> std::uint64_t {
   return NAME_SIZE + SIZE_SIZE + FIRST_CLUSTER_SIZE + PARENT_FIRST_CLUSTER_SIZE + IS_DIRECTORY_SIZE;
 }
+
+auto Metadata::to_string(Metadata const &metadata) -> std::string {
+  std::ostringstream oss;
+
+  if (metadata.is_directory()) {
+    oss << "D";
+  } else {
+    oss << "F";
+  }
+  oss << " " << metadata.get_name();
+  oss << ", " << metadata.get_size() << "b";
+
+  return oss.str();
+}
