@@ -1,20 +1,20 @@
 #include "PathResolver.hpp"
 
-PathResolver::PathResolver(std::string delimiter, std::shared_ptr<DiskReader> disk_reader, std::shared_ptr<FAT> fat,
-                           std::uint64_t cluster_size)
-    : delimiter_(std::move(delimiter)), disk_reader_(std::move(disk_reader)), fat_(std::move(fat)),
-      cluster_size_(cluster_size) {}
+PathResolver::PathResolver() : delimiter_("/") {}
+
+PathResolver::PathResolver(std::string delimiter, HandlerBuilder handler_builder)
+    : delimiter_(std::move(delimiter)), handler_builder_(std::move(handler_builder)) {}
 
 auto PathResolver::delimiter() const -> std::string const & { return delimiter_; }
 
-auto PathResolver::search(std::string const &path, FileData const &working_dir, FileData const &root_dir) const
-    -> std::optional<FileData> {
+auto PathResolver::search(std::string const &path, std::uint64_t search_dir) const -> std::optional<std::uint64_t> {
   auto path_tokens = parse(path, delimiter_);
 
   if (path_tokens[0].empty()) {
-    return get_file(std::vector<std::string>(path_tokens.begin() + 1, path_tokens.end()), root_dir);
+    // if path starts with delimiter, search from root
+    return get_file(std::vector<std::string>(path_tokens.begin() + 1, path_tokens.end()), 0);
   }
-  return get_file(path_tokens, working_dir);
+  return get_file(path_tokens, search_dir);
 }
 
 auto PathResolver::parse(std::string const &path, std::string const &delimiter) -> std::vector<std::string> {
@@ -62,15 +62,30 @@ auto PathResolver::basename(std::string const &path, std::string const &delimite
   return path_copy.substr(path_copy.find_last_of(delimiter) + 1);
 }
 
-auto PathResolver::get_file(std::vector<std::string> const &path_tokens, FileData const &file_data) const
-    -> std::optional<FileData> {
-  if (path_tokens.empty()) return file_data;
+auto PathResolver::get_file(std::vector<std::string> const &path_tokens, std::uint64_t file_cluster) const
+    -> std::optional<std::uint64_t> {
+  if (path_tokens.empty()) return file_cluster;
+
+  auto metadata_handler = handler_builder_.build_metadata_handler(file_cluster);
+  auto file_data = metadata_handler.read_metadata();
   if (!file_data.is_directory()) return {};
 
-  auto file_reader = FileReader(file_data, FileHandler::FileOffset(0), fat_, cluster_size_, disk_reader_,
-                                FileReader::BlockSize(file_data.size().bytes));
-  auto cur_dir = Directory::from_bytes(file_reader.read_block());
-  auto next = cur_dir.find(path_tokens[0]);
+  auto file_reader = handler_builder_.build_file_reader(file_cluster);
+  file_reader.set_block_size(file_data.get_size());
+
+  auto cur_dir = Directory::from_bytes(file_reader.read());
+  auto next = find_file_in_dir(path_tokens[0], cur_dir);
   if (!next) return {};
   return get_file(std::vector<std::string>(path_tokens.begin() + 1, path_tokens.end()), *next);
+}
+
+auto PathResolver::find_file_in_dir(std::string const &file_name, Directory const &dir) const
+    -> std::optional<std::uint64_t> {
+  for (auto const &cluster : dir.list_files()) {
+    auto metadata_handler = handler_builder_.build_metadata_handler(cluster);
+    auto file_data = metadata_handler.read_metadata();
+    if (file_data.get_name() == file_name) return cluster;
+  }
+
+  return {};
 }

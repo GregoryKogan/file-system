@@ -12,9 +12,9 @@ public:
   ClusterReader(const ClusterReader &cluster_reader) = default;
 
   ~ClusterReader() = default;
-  auto operator=(const ClusterReader &other) -> ClusterReader = delete;
+  auto operator=(const ClusterReader &other) -> ClusterReader & = default;
   ClusterReader(ClusterReader &&other) = default;
-  auto operator=(ClusterReader &&other) -> ClusterReader = delete;
+  auto operator=(ClusterReader &&other) -> ClusterReader & = default;
 
   [[nodiscard]] auto read_cluster(std::uint64_t cluster_index) -> std::vector<std::byte>;
 };

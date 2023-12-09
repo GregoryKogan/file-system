@@ -9,6 +9,12 @@ class ClusterWriter {
 
 public:
   ClusterWriter(DiskWriter disk_writer, std::uint64_t clusters_start_offset, std::uint64_t cluster_size);
+  ClusterWriter(const ClusterWriter &cluster_writer) = default;
+
+  ~ClusterWriter() = default;
+  auto operator=(const ClusterWriter &other) -> ClusterWriter & = default;
+  ClusterWriter(ClusterWriter &&other) = default;
+  auto operator=(ClusterWriter &&other) -> ClusterWriter & = default;
 
   [[nodiscard]] auto get_cluster_size() const -> std::uint64_t;
 

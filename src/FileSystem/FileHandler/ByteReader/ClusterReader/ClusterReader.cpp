@@ -10,5 +10,5 @@ auto ClusterReader::read_cluster(std::uint64_t cluster_index) -> std::vector<std
   auto cluster_offset = clusters_start_offset_ + cluster_index * cluster_size_;
   disk_reader_.set_offset(cluster_offset);
   disk_reader_.set_block_size(cluster_size_);
-  return disk_reader_.read_block();
+  return disk_reader_.read();
 }

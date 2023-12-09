@@ -21,7 +21,7 @@ protected:
     auto disk_reader = std::make_shared<DiskReader>(std::move(ifs), DiskHandler::DiskOffset(0));
     auto disk_writer = std::make_shared<DiskWriter>(std::move(ofs), DiskHandler::DiskOffset(0));
 
-    fat_ = std::make_shared<FAT>(disk_reader, disk_writer, DiskHandler::DiskOffset(FSMaker::fat_offset()),
+    fat_ = std::make_shared<FAT>(disk_reader, disk_writer, DiskHandler::DiskOffset(FSMaker::get_fat_offset()),
                                  FSMaker::calculate_fat_entries_count({SIZE, CLUSTER_SIZE}));
   }
 

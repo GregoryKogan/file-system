@@ -17,29 +17,29 @@ class FAT {
   std::uint64_t entries_count_;
   std::uint64_t disk_offset_;
 
-  std::shared_ptr<DiskReader> disk_reader_;
-  std::shared_ptr<DiskWriter> disk_writer_;
+  DiskReader disk_reader_;
+  DiskWriter disk_writer_;
 
 public:
-  explicit FAT(std::shared_ptr<DiskReader> &disk_reader_, std::shared_ptr<DiskWriter> &disk_writer_,
-               std::uint64_t offset, std::uint64_t entries_count);
+  FAT();
+  FAT(DiskReader disk_reader_, DiskWriter disk_writer_, std::uint64_t offset, std::uint64_t entries_count);
 
   [[nodiscard]] auto entries_count() const noexcept -> std::uint64_t;
 
   [[nodiscard]] auto allocate() -> std::uint64_t;
   [[nodiscard]] auto allocate_next(std::uint64_t cluster_index) -> std::uint64_t;
   void set_next(std::uint64_t cluster_index, std::uint64_t next_cluster_index);
-  [[nodiscard]] auto get_next(std::uint64_t cluster_index) const -> std::uint64_t;
-  [[nodiscard]] auto is_last(std::uint64_t cluster_index) const -> bool;
-  [[nodiscard]] auto is_allocated(std::uint64_t cluster_index) const -> bool;
+  [[nodiscard]] auto get_next(std::uint64_t cluster_index) -> std::uint64_t;
+  [[nodiscard]] auto is_last(std::uint64_t cluster_index) -> bool;
+  [[nodiscard]] auto is_allocated(std::uint64_t cluster_index) -> bool;
 
   static auto empty_entry_bytes() -> std::vector<std::byte>;
   static auto entry_size() -> std::uint64_t;
   static auto to_string(FAT const &fat) -> std::string;
 
 private:
-  [[nodiscard]] auto entries() const -> std::vector<FATEntry>;
-  [[nodiscard]] auto get_entry(std::uint64_t cluster_index) const -> FATEntry;
+  [[nodiscard]] auto entries() -> std::vector<FATEntry>;
+  [[nodiscard]] auto get_entry(std::uint64_t cluster_index) -> FATEntry;
   void set_entry(std::uint64_t cluster_index, FATEntry const &entry);
 
   static auto to_fat_entry(std::vector<std::byte> const &entry_bytes) -> FATEntry;

@@ -1,20 +1,22 @@
 #include "FAT.hpp"
 
-FAT::FAT(std::shared_ptr<DiskReader> &disk_reader_, std::shared_ptr<DiskWriter> &disk_writer_, std::uint64_t offset,
-         std::uint64_t entries_count)
-    : disk_reader_(disk_reader_), disk_writer_(disk_writer_), entries_count_(entries_count), disk_offset_(offset) {}
+FAT::FAT() : entries_count_(0), disk_offset_(0) {}
+
+FAT::FAT(DiskReader disk_reader_, DiskWriter disk_writer_, std::uint64_t offset, std::uint64_t entries_count)
+    : disk_reader_(std::move(disk_reader_)), disk_writer_(std::move(disk_writer_)), entries_count_(entries_count),
+      disk_offset_(offset) {}
 
 auto FAT::entries_count() const noexcept -> std::uint64_t { return entries_count_; }
 
-auto FAT::entries() const -> std::vector<FATEntry> {
+auto FAT::entries() -> std::vector<FATEntry> {
   if (entries_count_ > MAX_ENTRIES_TO_LOAD) throw std::runtime_error("Too many FAT entries to load");
 
-  disk_reader_->set_offset(disk_offset_);
-  disk_reader_->set_block_size(ENTRY_SIZE);
+  disk_reader_.set_offset(disk_offset_);
+  disk_reader_.set_block_size(ENTRY_SIZE);
 
   std::vector<FATEntry> entries;
   for (std::uint64_t i = 0; i < entries_count_; ++i) {
-    auto entry_bytes = disk_reader_->read_next_block();
+    auto entry_bytes = disk_reader_.read_next();
     auto entry = to_fat_entry(entry_bytes);
     entries.push_back(entry);
   }
@@ -26,8 +28,8 @@ auto FAT::allocate() -> std::uint64_t {
   for (std::uint64_t i = 0; i < entries_count_; ++i) {
     if (!is_allocated(i)) {
       auto entry = FATEntry{ClusterStatusOptions::LAST, 0};
-      disk_writer_->set_offset(disk_offset_ + i * ENTRY_SIZE);
-      disk_writer_->write(to_bytes(entry));
+      disk_writer_.set_offset(disk_offset_ + i * ENTRY_SIZE);
+      disk_writer_.write(to_bytes(entry));
       return i;
     }
   }
@@ -61,29 +63,29 @@ void FAT::set_next(std::uint64_t cluster_index, std::uint64_t next_cluster_index
   set_entry(cluster_index, entry);
 }
 
-auto FAT::get_next(std::uint64_t cluster_index) const -> std::uint64_t {
+auto FAT::get_next(std::uint64_t cluster_index) -> std::uint64_t {
   auto entry = get_entry(cluster_index);
   if (entry.status == ClusterStatusOptions::FREE) throw std::runtime_error("Cluster is not allocated");
   if (entry.status == ClusterStatusOptions::LAST) throw std::runtime_error("Cluster is last and has no next cluster");
   return entry.next_cluster;
 }
 
-auto FAT::is_last(std::uint64_t cluster_index) const -> bool {
+auto FAT::is_last(std::uint64_t cluster_index) -> bool {
   return get_entry(cluster_index).status == ClusterStatusOptions::LAST;
 }
 
-auto FAT::is_allocated(std::uint64_t cluster_index) const -> bool {
+auto FAT::is_allocated(std::uint64_t cluster_index) -> bool {
   auto entry = get_entry(cluster_index);
   return entry.status != ClusterStatusOptions::FREE;
 }
 
-auto FAT::get_entry(std::uint64_t cluster_index) const -> FATEntry {
+auto FAT::get_entry(std::uint64_t cluster_index) -> FATEntry {
   if (cluster_index >= entries_count_) throw std::runtime_error("Invalid cluster index");
 
   std::uint64_t cluster_disk_offset = disk_offset_ + cluster_index * ENTRY_SIZE;
-  disk_reader_->set_offset(cluster_disk_offset);
-  disk_reader_->set_block_size(ENTRY_SIZE);
-  auto entry_bytes = disk_reader_->read_block();
+  disk_reader_.set_offset(cluster_disk_offset);
+  disk_reader_.set_block_size(ENTRY_SIZE);
+  auto entry_bytes = disk_reader_.read();
   auto entry = to_fat_entry(entry_bytes);
   return entry;
 }
@@ -92,8 +94,8 @@ void FAT::set_entry(std::uint64_t cluster_index, FATEntry const &entry) {
   if (cluster_index >= entries_count_) throw std::runtime_error("Invalid cluster index");
 
   std::uint64_t cluster_disk_offset = disk_offset_ + cluster_index * ENTRY_SIZE;
-  disk_writer_->set_offset(cluster_disk_offset);
-  disk_writer_->write(to_bytes(entry));
+  disk_writer_.set_offset(cluster_disk_offset);
+  disk_writer_.write(to_bytes(entry));
 }
 
 auto FAT::to_fat_entry(std::vector<std::byte> const &entry_bytes) -> FATEntry {
@@ -130,7 +132,8 @@ auto FAT::empty_entry_bytes() -> std::vector<std::byte> {
 auto FAT::entry_size() -> std::uint64_t { return ENTRY_SIZE; }
 
 auto FAT::to_string(FAT const &fat) -> std::string {
-  auto entries = fat.entries();
+  auto fat_copy = fat;
+  auto entries = fat_copy.entries();
 
   std::ostringstream oss;
 
