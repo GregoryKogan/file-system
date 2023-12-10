@@ -103,21 +103,22 @@ auto CLI::basename(std::vector<std::string> args) -> void {
 auto CLI::ls(std::vector<std::string> args) -> void {
   bool verbose = false;
 
+  std::string path;
   std::vector<Metadata> files;
 
   if (args.empty()) {
-    files = file_system_.ls(".");
+    path = ".";
   } else if (args.size() == 1) {
     if (args[0] == "-l") {
       verbose = true;
-      files = file_system_.ls(".");
+      path = ".";
     } else {
-      files = file_system_.ls(args[0]);
+      path = args[0];
     }
   } else if (args.size() == 2) {
     if (args[1] == "-l") {
       verbose = true;
-      files = file_system_.ls(args[0]);
+      path = args[0];
     } else {
       std::cout << "Wrong arguments. Usage: ls [-l] <path>\n";
       return;
@@ -127,12 +128,10 @@ auto CLI::ls(std::vector<std::string> args) -> void {
     return;
   }
 
-  if (!files.empty()) {
-    std::cout << Metadata::to_string(files[0], verbose) << '\n';
-    for (auto it = files.begin() + 1; it != files.end(); ++it) {
-      std::cout << "|----" << Metadata::to_string(*it, verbose) << '\n';
-    }
-  }
+  files = file_system_.ls(path);
+
+  std::cout << file_system_.basename(path) << "\n";
+  for (auto const &file : files) { std::cout << "|----" << Metadata::to_string(file, verbose) << '\n'; }
 }
 
 auto CLI::mkdir(std::vector<std::string> args) -> void {

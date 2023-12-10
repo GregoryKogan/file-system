@@ -9,38 +9,35 @@ protected:
   std::uint64_t const SIZE = 2024;
   std::uint64_t const CLUSTER_SIZE = 64;
 
-  std::unique_ptr<FileSystem> file_system_;
+  FileSystem file_system_;
   // NOLINTEND(cppcoreguidelines-non-private-member-variables-in-classes)
 
   void SetUp() override {
     FileSystem::make(PATH, {SIZE, CLUSTER_SIZE});
-
-    file_system_ = std::make_unique<FileSystem>(PATH);
+    file_system_ = FileSystem(PATH);
   }
 
   void TearDown() override { std::filesystem::remove(PATH); }
 };
 
 TEST_F(MkdirTest, Empty) {
-  file_system_->mkdir("./a");
-  file_system_->mkdir("b");
-  file_system_->mkdir("/c");
-  auto const list = file_system_->ls("/");
-  EXPECT_EQ(list.size(), 5);
-  EXPECT_EQ(list[0].name(), ".");
-  EXPECT_EQ(list[1].name(), "..");
-  EXPECT_EQ(list[2].name(), "a");
-  EXPECT_EQ(list[3].name(), "b");
-  EXPECT_EQ(list[4].name(), "c");
+  file_system_.mkdir("./a");
+  file_system_.mkdir("b");
+  file_system_.mkdir("/c");
+  auto const list = file_system_.ls("/");
+  EXPECT_EQ(list.size(), 3);
+  EXPECT_EQ(list[0].get_name(), "a");
+  EXPECT_EQ(list[1].get_name(), "b");
+  EXPECT_EQ(list[2].get_name(), "c");
 }
 
-TEST_F(MkdirTest, NonExistent) { EXPECT_THROW(file_system_->mkdir("/non_existent/test"), std::invalid_argument); }
+TEST_F(MkdirTest, NonExistent) { EXPECT_THROW(file_system_.mkdir("/non_existent/test"), std::invalid_argument); }
 
 TEST_F(MkdirTest, NonExistentNested) {
-  EXPECT_THROW(file_system_->mkdir("/non_existent/nested/test"), std::invalid_argument);
+  EXPECT_THROW(file_system_.mkdir("/non_existent/nested/test"), std::invalid_argument);
 }
 
 TEST_F(MkdirTest, AlreadyExists) {
-  file_system_->mkdir("/test");
-  EXPECT_THROW(file_system_->mkdir("/test"), std::invalid_argument);
+  file_system_.mkdir("/test");
+  EXPECT_THROW(file_system_.mkdir("/test"), std::invalid_argument);
 }

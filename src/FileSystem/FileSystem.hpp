@@ -50,12 +50,4 @@ private:
   void read_settings();
   [[nodiscard]] auto is_root_dir_created() noexcept -> bool;
   auto create_root_dir() -> void;
-  // [[nodiscard]] auto root_dir_size() const noexcept -> std::uint64_t;
-  // [[nodiscard]] auto root_dir_file_data() const -> FileData;
-
-  // [[nodiscard]] auto search(std::string const &path) const -> std::optional<FileData>;
-
-  // [[nodiscard]] auto get_parent_dir_data(std::string const &path) -> std::optional<FileData>;
-  // auto write_new_dir(FileData const &parent_dir_data, std::string const &dir_name) -> FileData;
-  // auto update_parent_dir(FileData const &parent_dir_data, FileData const &new_file_data) -> void;
 };

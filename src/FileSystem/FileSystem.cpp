@@ -38,7 +38,6 @@ auto FileSystem::ls(std::string const &path) const -> std::vector<Metadata> {
   auto dir = Directory::from_bytes(dir_reader.read());
 
   auto child_clusters = dir.list_files();
-  child_clusters.insert(child_clusters.begin(), dir_cluster.value());
   std::vector<Metadata> metadata_list;
   for (auto const &child_cluster : child_clusters) {
     auto metadata_handler = handler_builder_.build_metadata_handler(child_cluster);
@@ -59,6 +58,11 @@ auto FileSystem::basename(std::string const &path) -> std::string {
 auto FileSystem::mkdir(std::string const &path) -> void {
   auto parent_dir_path = dirname(path);
   auto dir_name = basename(path);
+
+  auto existing_children = ls(parent_dir_path);
+  for (auto const &child : existing_children) {
+    if (child.get_name() == dir_name) throw std::invalid_argument("Directory already exists");
+  }
 
   auto parent_dir_cluster = path_resolver_.search(parent_dir_path, working_dir_cluster_);
   if (!parent_dir_cluster.has_value()) throw std::invalid_argument("Parent directory does not exist");
