@@ -29,7 +29,7 @@ void FileSystem::make(std::string const &path, FSMaker::Settings const &settings
 auto FileSystem::get_settings() const noexcept -> FSMaker::Settings const & { return settings_; }
 
 auto FileSystem::ls(std::string const &path) const -> std::vector<Metadata> {
-  auto dir_cluster = path_resolver_.search(path, working_dir_cluster_);
+  auto dir_cluster = search(path);
   if (!dir_cluster.has_value()) throw std::invalid_argument("Directory does not exist");
 
   auto dir = read_dir(dir_cluster.value());
@@ -37,40 +37,23 @@ auto FileSystem::ls(std::string const &path) const -> std::vector<Metadata> {
   return get_metadata_from_clusters(child_clusters);
 }
 
-auto FileSystem::dirname(std::string const &path) -> std::string {
+auto FileSystem::dirname(std::string const &path) const -> std::string {
   return PathResolver::dirname(path, path_resolver_.delimiter());
 }
 
-auto FileSystem::basename(std::string const &path) -> std::string {
+auto FileSystem::basename(std::string const &path) const -> std::string {
   return PathResolver::basename(path, path_resolver_.delimiter());
 }
 
 auto FileSystem::mkdir(std::string const &path) -> void {
-  auto parent_dir_path = dirname(path);
-  auto dir_name = basename(path);
+  if (does_file_exist(path)) throw std::invalid_argument("Already exists");
+  if (!does_dir_exist(dirname(path))) throw std::invalid_argument("Parent directory does not exist");
 
-  auto existing_children = ls(parent_dir_path);
-  for (auto const &child : existing_children) {
-    if (child.get_name() == dir_name) throw std::invalid_argument("Directory already exists");
-  }
-
-  auto parent_dir_cluster = path_resolver_.search(parent_dir_path, working_dir_cluster_);
+  auto parent_dir_cluster = search(dirname(path));
   if (!parent_dir_cluster.has_value()) throw std::invalid_argument("Parent directory does not exist");
 
-  auto parent_dir_metadata_handler = handler_builder_.build_metadata_handler(parent_dir_cluster.value());
-  auto parent_dir_reader = handler_builder_.build_file_reader(parent_dir_cluster.value());
-  parent_dir_reader.set_block_size(parent_dir_metadata_handler.read_metadata().get_size());
-  auto parent_dir = Directory::from_bytes(parent_dir_reader.read());
-
-  auto new_dir_cluster = fat_.allocate();
-  auto new_dir_byte_writer = handler_builder_.build_byte_writer(new_dir_cluster);
-  auto new_dir_meta = Metadata(dir_name, 0, new_dir_cluster, parent_dir_cluster.value(), true);
-  new_dir_byte_writer.write_bytes(0, new_dir_meta.to_bytes());
-
-  parent_dir.add_file(new_dir_cluster);
-
-  auto parent_dir_writer = handler_builder_.build_file_writer(parent_dir_cluster.value());
-  parent_dir_writer.write(parent_dir.to_bytes());
+  auto new_dir_cluster = alloc_new_dir(basename(path), parent_dir_cluster.value());
+  add_file_to_dir(parent_dir_cluster.value(), new_dir_cluster);
 }
 
 void FileSystem::read_settings() {
@@ -107,6 +90,34 @@ auto FileSystem::get_metadata_from_clusters(const std::vector<std::uint64_t> &cl
     return handler_builder_.build_metadata_handler(cluster).read_metadata();
   });
   return metadata_list;
+}
+
+auto FileSystem::search(std::string const &path) const -> std::optional<std::uint64_t> {
+  return path_resolver_.search(path, working_dir_cluster_);
+}
+
+auto FileSystem::does_file_exist(std::string const &path) const -> bool { return search(path).has_value(); }
+
+auto FileSystem::does_dir_exist(std::string const &path) const -> bool {
+  auto dir_cluster = search(path);
+  if (!dir_cluster.has_value()) return false;
+
+  auto metadata_handler = handler_builder_.build_metadata_handler(dir_cluster.value());
+  return metadata_handler.read_metadata().is_directory();
+}
+
+auto FileSystem::alloc_new_dir(std::string const &name, std::uint64_t parent_cluster) -> std::uint64_t {
+  auto new_dir_cluster = fat_.allocate();
+  auto new_dir_byte_writer = handler_builder_.build_byte_writer(new_dir_cluster);
+  auto new_dir_meta = Metadata(name, 0, new_dir_cluster, parent_cluster, true);
+  new_dir_byte_writer.write_bytes(0, new_dir_meta.to_bytes());
+  return new_dir_cluster;
+}
+
+auto FileSystem::add_file_to_dir(std::uint64_t parent_cluster, std::uint64_t child_cluster) const -> void {
+  auto parent_dir = read_dir(parent_cluster);
+  parent_dir.add_file(child_cluster);
+  handler_builder_.build_file_writer(parent_cluster).write(parent_dir.to_bytes());
 }
 
 auto operator<<(std::ostream &out_stream, FileSystem const &file_system) -> std::ostream & {

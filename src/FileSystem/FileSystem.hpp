@@ -40,8 +40,8 @@ public:
   [[nodiscard]] auto get_settings() const noexcept -> FSMaker::Settings const &;
 
   [[nodiscard]] auto ls(std::string const &path) const -> std::vector<Metadata>;
-  [[nodiscard]] auto dirname(std::string const &path) -> std::string;
-  [[nodiscard]] auto basename(std::string const &path) -> std::string;
+  [[nodiscard]] auto dirname(std::string const &path) const -> std::string;
+  [[nodiscard]] auto basename(std::string const &path) const -> std::string;
   auto mkdir(std::string const &path) -> void;
 
   friend auto operator<<(std::ostream &out_stream, FileSystem const &file_system) -> std::ostream &;
@@ -53,4 +53,9 @@ private:
   [[nodiscard]] auto read_dir(std::uint64_t cluster) const -> Directory;
   [[nodiscard]] auto get_metadata_from_clusters(const std::vector<std::uint64_t> &clusters) const
       -> std::vector<Metadata>;
+  [[nodiscard]] auto search(std::string const &path) const -> std::optional<std::uint64_t>;
+  [[nodiscard]] auto does_file_exist(std::string const &path) const -> bool;
+  [[nodiscard]] auto does_dir_exist(std::string const &path) const -> bool;
+  [[nodiscard]] auto alloc_new_dir(std::string const &name, std::uint64_t parent_cluster) -> std::uint64_t;
+  auto add_file_to_dir(std::uint64_t parent_cluster, std::uint64_t child_cluster) const -> void;
 };
