@@ -38,6 +38,7 @@ auto FileSystem::ls(std::string const &path) const -> std::vector<Metadata> {
   auto dir = Directory::from_bytes(dir_reader.read());
 
   auto child_clusters = dir.list_files();
+  child_clusters.insert(child_clusters.begin(), dir_cluster.value());
   std::vector<Metadata> metadata_list;
   for (auto const &child_cluster : child_clusters) {
     auto metadata_handler = handler_builder_.build_metadata_handler(child_cluster);

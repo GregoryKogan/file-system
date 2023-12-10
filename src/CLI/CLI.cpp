@@ -127,7 +127,12 @@ auto CLI::ls(std::vector<std::string> args) -> void {
     return;
   }
 
-  for (auto const &file : files) { std::cout << Metadata::to_string(file, verbose) << '\n'; }
+  if (!files.empty()) {
+    std::cout << Metadata::to_string(files[0], verbose) << '\n';
+    for (auto it = files.begin() + 1; it != files.end(); ++it) {
+      std::cout << "|----" << Metadata::to_string(*it, verbose) << '\n';
+    }
+  }
 }
 
 auto CLI::mkdir(std::vector<std::string> args) -> void {
