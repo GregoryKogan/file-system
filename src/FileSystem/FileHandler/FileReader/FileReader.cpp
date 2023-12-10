@@ -6,7 +6,7 @@ FileReader::FileReader(ByteReader byte_reader, MetadataHandler metadata_handler,
 
 auto FileReader::get_block_size() const noexcept -> std::uint64_t { return block_size_; }
 
-void FileReader::set_block_size(std::uint64_t block_size) noexcept { block_size_ = block_size; }
+auto FileReader::set_block_size(std::uint64_t block_size) noexcept -> void { block_size_ = block_size; }
 
 auto FileReader::read() -> std::vector<std::byte> {
   auto meta = get_metadata_handler().read_metadata();

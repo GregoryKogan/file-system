@@ -1,6 +1,6 @@
 #include "FSMaker.hpp"
 
-void FSMaker::make_fs(std::string const &path, Settings const &settings, bool allow_big) {
+auto FSMaker::make_fs(std::string const &path, Settings const &settings, bool allow_big) -> void {
   validate_settings(settings, allow_big);
 
   auto ofs = std::make_unique<std::ofstream>(path, std::ios::binary);
@@ -15,7 +15,7 @@ void FSMaker::make_fs(std::string const &path, Settings const &settings, bool al
 
 auto FSMaker::get_fat_offset() -> std::uint64_t { return FAT_OFFSET; }
 
-void FSMaker::validate_settings(Settings const &settings, bool allow_big) {
+auto FSMaker::validate_settings(Settings const &settings, bool allow_big) -> void {
   if (settings.size < MIN_FS_SIZE) {
     throw std::runtime_error("File system size must be greater than " + std::to_string(MIN_FS_SIZE) + " bytes");
   }
@@ -37,7 +37,7 @@ void FSMaker::validate_settings(Settings const &settings, bool allow_big) {
   }
 }
 
-void FSMaker::fill_zeros(DiskWriter &writer, std::uint64_t size) {
+auto FSMaker::fill_zeros(DiskWriter &writer, std::uint64_t size) -> void {
   writer.set_offset(0);
 
   // write full blocks
@@ -49,7 +49,7 @@ void FSMaker::fill_zeros(DiskWriter &writer, std::uint64_t size) {
   writer.write_next(bytes);
 }
 
-void FSMaker::write_settings(DiskWriter &writer, Settings const &settings) {
+auto FSMaker::write_settings(DiskWriter &writer, Settings const &settings) -> void {
   writer.set_offset(0);
 
   auto size_bytes = Converter::to_bytes(settings.size);
@@ -59,7 +59,7 @@ void FSMaker::write_settings(DiskWriter &writer, Settings const &settings) {
   writer.write_next(cluster_size_bytes);
 }
 
-void FSMaker::write_fat(DiskWriter &writer, Settings const &settings) {
+auto FSMaker::write_fat(DiskWriter &writer, Settings const &settings) -> void {
   writer.set_offset(FAT_OFFSET);
 
   auto entries_count = calculate_fat_entries_count(settings);

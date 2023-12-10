@@ -21,7 +21,7 @@ public:
   auto operator=(DiskReader &&other) -> DiskReader & = default;
 
   [[nodiscard]] auto get_block_size() const noexcept -> std::uint64_t;
-  void set_block_size(std::uint64_t block_size) noexcept;
+  auto set_block_size(std::uint64_t block_size) noexcept -> void;
 
   [[nodiscard]] auto read() const -> std::vector<std::byte>;
   auto read_next() -> std::vector<std::byte>;

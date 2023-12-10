@@ -35,7 +35,7 @@ public:
   FileSystem() = default;
   explicit FileSystem(std::string const &path);
 
-  static void make(std::string const &path, FSMaker::Settings const &settings, bool allow_big = false);
+  static auto make(std::string const &path, FSMaker::Settings const &settings, bool allow_big = false) -> void;
 
   [[nodiscard]] auto get_settings() const noexcept -> FSMaker::Settings const &;
 
@@ -47,7 +47,7 @@ public:
   friend auto operator<<(std::ostream &out_stream, FileSystem const &file_system) -> std::ostream &;
 
 private:
-  void read_settings();
+  auto read_settings() -> void;
   [[nodiscard]] auto is_root_dir_created() noexcept -> bool;
   auto create_root_dir() -> void;
   [[nodiscard]] auto read_dir(std::uint64_t cluster) const -> Directory;

@@ -49,7 +49,7 @@ auto FAT::allocate_next(std::uint64_t cluster_index) -> std::uint64_t {
   return next_cluster_index;
 }
 
-void FAT::set_next(std::uint64_t cluster_index, std::uint64_t next_cluster_index) {
+auto FAT::set_next(std::uint64_t cluster_index, std::uint64_t next_cluster_index) -> void {
   if (cluster_index >= entries_count_ || next_cluster_index >= entries_count_) {
     throw std::runtime_error("Invalid cluster index");
   }
@@ -90,7 +90,7 @@ auto FAT::get_entry(std::uint64_t cluster_index) -> FATEntry {
   return entry;
 }
 
-void FAT::set_entry(std::uint64_t cluster_index, FATEntry const &entry) {
+auto FAT::set_entry(std::uint64_t cluster_index, FATEntry const &entry) -> void {
   if (cluster_index >= entries_count_) throw std::runtime_error("Invalid cluster index");
 
   std::uint64_t cluster_disk_offset = disk_offset_ + cluster_index * ENTRY_SIZE;

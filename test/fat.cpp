@@ -11,7 +11,7 @@ protected:
   const std::uint64_t CLUSTER_SIZE = 64;
   // NOLINTEND(cppcoreguidelines-non-private-member-variables-in-classes)
 
-  void SetUp() override {
+  auto SetUp() -> void override {
     FileSystem::make(PATH, {SIZE, CLUSTER_SIZE});
 
     auto ifs = std::make_unique<std::ifstream>(PATH, std::ios::binary | std::ios::in);
@@ -25,7 +25,7 @@ protected:
                FSMaker::calculate_fat_entries_count({SIZE, CLUSTER_SIZE}));
   }
 
-  void TearDown() override { std::filesystem::remove(PATH); }
+  auto TearDown() -> void override { std::filesystem::remove(PATH); }
 };
 
 TEST_F(FATTest, EntriesCount) {

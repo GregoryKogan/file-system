@@ -12,12 +12,12 @@ protected:
   FileSystem file_system_;
   // NOLINTEND(cppcoreguidelines-non-private-member-variables-in-classes)
 
-  void SetUp() override {
+  auto SetUp() -> void override {
     FileSystem::make(PATH, {SIZE, CLUSTER_SIZE});
     file_system_ = FileSystem(PATH);
   }
 
-  void TearDown() override { std::filesystem::remove(PATH); }
+  auto TearDown() -> void override { std::filesystem::remove(PATH); }
 };
 
 TEST_F(DirnameBasenameTest, Dirname) {

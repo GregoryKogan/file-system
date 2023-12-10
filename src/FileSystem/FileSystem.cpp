@@ -22,7 +22,7 @@ FileSystem::FileSystem(std::string const &path) {
   working_dir_cluster_ = 0;
 }
 
-void FileSystem::make(std::string const &path, FSMaker::Settings const &settings, bool allow_big) {
+auto FileSystem::make(std::string const &path, FSMaker::Settings const &settings, bool allow_big) -> void {
   FSMaker::make_fs(path, settings, allow_big);
 }
 
@@ -56,7 +56,7 @@ auto FileSystem::mkdir(std::string const &path) -> void {
   add_file_to_dir(parent_dir_cluster.value(), new_dir_cluster);
 }
 
-void FileSystem::read_settings() {
+auto FileSystem::read_settings() -> void {
   disk_reader_.set_offset(0);
   disk_reader_.set_block_size(Converter::get_uint64_size());
 

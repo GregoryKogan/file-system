@@ -19,6 +19,6 @@ public:
   DiskWriter(DiskWriter &&other) = default;
   auto operator=(DiskWriter &&other) -> DiskWriter & = default;
 
-  void write(const std::vector<std::byte> &bytes) const;
-  void write_next(const std::vector<std::byte> &bytes);
+  auto write(const std::vector<std::byte> &bytes) const -> void;
+  auto write_next(const std::vector<std::byte> &bytes) -> void;
 };

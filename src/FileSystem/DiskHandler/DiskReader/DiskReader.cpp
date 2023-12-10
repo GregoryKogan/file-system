@@ -7,7 +7,7 @@ DiskReader::DiskReader(std::shared_ptr<std::istream> stream, std::uint64_t offse
 
 auto DiskReader::get_block_size() const noexcept -> std::uint64_t { return block_size_; }
 
-void DiskReader::set_block_size(std::uint64_t block_size) noexcept { block_size_ = block_size; }
+auto DiskReader::set_block_size(std::uint64_t block_size) noexcept -> void { block_size_ = block_size; }
 
 auto DiskReader::read() const -> std::vector<std::byte> {
   is_->seekg(static_cast<std::streamoff>(get_offset() + get_handled_size()));

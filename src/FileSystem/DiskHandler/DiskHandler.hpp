@@ -13,8 +13,8 @@ public:
   [[nodiscard]] auto get_offset() const noexcept -> std::uint64_t;
   [[nodiscard]] auto get_handled_size() const noexcept -> std::uint64_t;
 
-  void set_offset(std::uint64_t offset) noexcept;
+  auto set_offset(std::uint64_t offset) noexcept -> void;
 
 protected:
-  void increase_handled_size(std::uint64_t size) noexcept;
+  auto increase_handled_size(std::uint64_t size) noexcept -> void;
 };
