@@ -32,19 +32,9 @@ auto FileSystem::ls(std::string const &path) const -> std::vector<Metadata> {
   auto dir_cluster = path_resolver_.search(path, working_dir_cluster_);
   if (!dir_cluster.has_value()) throw std::invalid_argument("Directory does not exist");
 
-  auto metadata_handler = handler_builder_.build_metadata_handler(dir_cluster.value());
-  auto dir_reader = handler_builder_.build_file_reader(dir_cluster.value());
-  dir_reader.set_block_size(metadata_handler.read_metadata().get_size());
-  auto dir = Directory::from_bytes(dir_reader.read());
-
+  auto dir = read_dir(dir_cluster.value());
   auto child_clusters = dir.list_files();
-  std::vector<Metadata> metadata_list;
-  for (auto const &child_cluster : child_clusters) {
-    auto metadata_handler = handler_builder_.build_metadata_handler(child_cluster);
-    metadata_list.push_back(metadata_handler.read_metadata());
-  }
-
-  return metadata_list;
+  return get_metadata_from_clusters(child_clusters);
 }
 
 auto FileSystem::dirname(std::string const &path) -> std::string {
@@ -103,54 +93,21 @@ auto FileSystem::create_root_dir() -> void {
   byte_writer.write_bytes(0, root_meta.to_bytes());
 }
 
-// static auto FileSystem::root_dir_size() noexcept -> std::uint64_t {
-//   auto file_reader =
-//       FileReader(FileData(path_resolver_->delimiter(), FileData::FileSize{FileData::file_data_size()}, 0, true),
-//                  FileHandler::FileOffset(0), fat_, settings_.cluster_size, disk_reader_,
-//                  FileReader::BlockSize(FileData::file_data_size()));
-//   auto root_dir_file_data = FileData::from_bytes(file_reader.read());
-//   return root_dir_file_data.size().bytes;
-// }
+auto FileSystem::read_dir(std::uint64_t cluster) const -> Directory {
+  auto metadata_handler = handler_builder_.build_metadata_handler(cluster);
+  auto dir_reader = handler_builder_.build_file_reader(cluster);
+  dir_reader.set_block_size(metadata_handler.read_metadata().get_size());
+  return Directory::from_bytes(dir_reader.read());
+}
 
-// auto FileSystem::root_dir_file_data() const -> FileData {
-//   return FileData(path_resolver_->delimiter(), FileData::FileSize{root_dir_size()}, 0, true);
-// }
-
-// auto FileSystem::search(std::string const &path) const -> std::optional<FileData> {
-//   return path_resolver_->search(path, *working_dir_, root_dir_file_data());
-// }
-
-// static auto FileSystem::get_parent_dir_data(std::string const &path) -> std::optional<FileData> {
-//   auto parent_dir_path = dirname(path);
-//   return search(parent_dir_path);
-// }
-
-// auto FileSystem::write_new_dir(FileData const &parent_dir_data, std::string const &dir_name) -> FileData {
-//   auto first_cluster = fat_->allocate();
-//   FileData new_dir_data(dir_name, FileData::FileSize{0}, first_cluster, true);
-//   auto file_writer = FileWriter(new_dir_data, FileHandler::FileOffset(0), fat_, settings_.cluster_size,
-//   disk_writer_); auto dir_bytes = Directory::make_empty(parent_dir_data, first_cluster).to_bytes();
-//   file_writer.write_block(dir_bytes);
-
-//   new_dir_data.set_size(FileData::FileSize{dir_bytes.size()});
-
-//   return new_dir_data;
-// }
-
-// static auto FileSystem::update_parent_dir(FileData const &parent_dir_data, FileData const &new_file_data) -> void {
-//   auto parent_dir_reader = FileReader(parent_dir_data, FileHandler::FileOffset(0), fat_, settings_.cluster_size,
-//                                       disk_reader_, FileReader::BlockSize(parent_dir_data.size().bytes));
-//   auto parent_dir = Directory::from_bytes(parent_dir_reader.read());
-//   parent_dir.add_file(new_file_data);
-
-//   auto parent_dir_writer =
-//       FileWriter(parent_dir_data, FileHandler::FileOffset(0), fat_, settings_.cluster_size, disk_writer_);
-//   parent_dir_writer.write_block(parent_dir.to_bytes());
-
-//   if (parent_dir_data.first_cluster_index() == working_dir_->first_cluster_index()) {
-//     working_dir_->set_size(FileData::FileSize{parent_dir.to_bytes().size()});
-//   }
-// }
+auto FileSystem::get_metadata_from_clusters(const std::vector<std::uint64_t> &clusters) const -> std::vector<Metadata> {
+  std::vector<Metadata> metadata_list;
+  metadata_list.reserve(clusters.size());
+  std::transform(clusters.begin(), clusters.end(), std::back_inserter(metadata_list), [this](auto const &cluster) {
+    return handler_builder_.build_metadata_handler(cluster).read_metadata();
+  });
+  return metadata_list;
+}
 
 auto operator<<(std::ostream &out_stream, FileSystem const &file_system) -> std::ostream & {
   out_stream << "FileSystem:\n";

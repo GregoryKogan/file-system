@@ -50,4 +50,7 @@ private:
   void read_settings();
   [[nodiscard]] auto is_root_dir_created() noexcept -> bool;
   auto create_root_dir() -> void;
+  [[nodiscard]] auto read_dir(std::uint64_t cluster) const -> Directory;
+  [[nodiscard]] auto get_metadata_from_clusters(const std::vector<std::uint64_t> &clusters) const
+      -> std::vector<Metadata>;
 };
