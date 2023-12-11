@@ -24,9 +24,9 @@ add_executable(
 
 if(CMAKE_BUILD_TYPE STREQUAL "Release")
   if(MSVC)
-    target_compile_options(${PROJECT_NAME} PRIVATE /O2)
+    target_compile_options(cli PRIVATE /O2)
   else()
-    target_compile_options(${PROJECT_NAME} PRIVATE -O3)
+    target_compile_options(cli PRIVATE -O3)
   endif()
 endif()
 
