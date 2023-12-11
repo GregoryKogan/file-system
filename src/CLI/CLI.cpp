@@ -37,7 +37,7 @@ auto CLI::run() -> void {
   }
 }
 
-auto CLI::prompt() -> std::string { return ">>> "; }
+auto CLI::prompt() -> std::string { return file_system_.pwd() + " $ "; }
 
 auto CLI::execute(std::string const &command, std::vector<std::string> args) -> void {
   if (command == "help") {
