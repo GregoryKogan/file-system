@@ -52,3 +52,12 @@ TEST_F(LsTest, MultipleFilesNested) {
   EXPECT_EQ(list.size(), 1);
   EXPECT_EQ(list[0].get_name(), "dir3");
 }
+
+TEST_F(LsTest, MultipleFilesNestedEmpty) {
+  file_system_.mkdir("/dir1");
+  file_system_.mkdir("/dir2");
+  file_system_.mkdir("/dir1/dir3");
+
+  auto const list = file_system_.ls("/dir1/dir3");
+  EXPECT_EQ(list.size(), 0);
+}
