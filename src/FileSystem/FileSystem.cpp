@@ -28,9 +28,7 @@ auto FileSystem::make(std::string const &path, FSMaker::Settings const &settings
 
 auto FileSystem::get_settings() const noexcept -> FSMaker::Settings const & { return settings_; }
 
-auto FileSystem::pwd() const -> std::string {
-  return path_resolver_.trace(handler_builder_.build_metadata_handler(working_dir_cluster_).read_metadata());
-}
+auto FileSystem::pwd() const -> std::string { return path_resolver_.trace(working_dir_cluster_); }
 
 auto FileSystem::ls(std::string const &path) const -> std::vector<Metadata> {
   auto dir_cluster = search(path);

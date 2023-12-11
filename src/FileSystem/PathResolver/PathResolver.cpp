@@ -19,11 +19,10 @@ auto PathResolver::search(std::string const &path, std::uint64_t search_dir) con
   return get_file(path_tokens, search_dir);
 }
 
-auto PathResolver::trace(const Metadata &file_meta) const -> std::string {
+auto PathResolver::trace(std::uint64_t cluster) const -> std::string {
   std::vector<std::string> path_tokens;
-  path_tokens.push_back(file_meta.get_name());
 
-  auto cur_dir = file_meta.get_parent_first_cluster();
+  auto cur_dir = cluster;
   while (cur_dir != 0) { // 0 is root dir
     auto metadata_handler = handler_builder_.build_metadata_handler(cur_dir);
     auto dir_data = metadata_handler.read_metadata();
@@ -36,6 +35,8 @@ auto PathResolver::trace(const Metadata &file_meta) const -> std::string {
     path += delimiter_;
     path += path_token;
   }
+
+  if (path.empty()) path = delimiter_;
 
   return path;
 }
