@@ -60,6 +60,12 @@ auto FileSystem::mkdir(std::string const &path) -> void {
   add_file_to_dir(parent_dir_cluster.value(), new_dir_cluster);
 }
 
+auto FileSystem::cd(std::string const &path) -> void {
+  auto dir_cluster = search(path);
+  if (!does_dir_exist(path) || !dir_cluster.has_value()) throw std::invalid_argument("Directory does not exist");
+  working_dir_cluster_ = dir_cluster.value();
+}
+
 auto FileSystem::read_settings() -> void {
   disk_reader_.set_offset(0);
   disk_reader_.set_block_size(Converter::get_uint64_size());

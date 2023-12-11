@@ -44,6 +44,7 @@ public:
   [[nodiscard]] auto dirname(std::string const &path) const -> std::string;
   [[nodiscard]] auto basename(std::string const &path) const -> std::string;
   auto mkdir(std::string const &path) -> void;
+  auto cd(std::string const &path) -> void;
 
   friend auto operator<<(std::ostream &out_stream, FileSystem const &file_system) -> std::ostream &;
 
