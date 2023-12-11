@@ -50,6 +50,8 @@ auto CLI::execute(std::string const &command, std::vector<std::string> args) -> 
     dirname(std::move(args));
   } else if (command == "basename") {
     basename(std::move(args));
+  } else if (command == "pwd") {
+    pwd();
   } else if (command == "ls") {
     ls(std::move(args));
   } else if (command == "mkdir") {
@@ -69,6 +71,7 @@ auto CLI::help() -> void {
   std::cout << "-\t'fsinfo' - show file system info\n";
   std::cout << "-\t'dirname <path>' - get the directory portion of a pathname\n";
   std::cout << "-\t'basename <path>' - get the filename portion of a pathname\n";
+  std::cout << "-\t'pwd' - print current working directory\n";
   std::cout << "-\t'ls [-l]' - list directory contents\n";
   std::cout << "-\t'mkdir <path>' - create a directory\n";
   std::cout << "-\t'cd <path>' - change the working directory\n";
@@ -102,6 +105,8 @@ auto CLI::basename(std::vector<std::string> args) -> void {
 
   std::cout << file_system_.basename(args[0]) << '\n';
 }
+
+auto CLI::pwd() -> void { std::cout << file_system_.pwd() << '\n'; }
 
 auto CLI::ls(std::vector<std::string> args) -> void {
   bool verbose = false;

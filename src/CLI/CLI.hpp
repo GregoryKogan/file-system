@@ -32,6 +32,7 @@ private:
   auto fsinfo() -> void;
   auto dirname(std::vector<std::string> args) -> void;
   auto basename(std::vector<std::string> args) -> void;
+  auto pwd() -> void;
   auto ls(std::vector<std::string> args) -> void;
   auto mkdir(std::vector<std::string> args) -> void;
   auto cd(std::vector<std::string> args) -> void;
