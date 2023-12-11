@@ -41,3 +41,20 @@ TEST_F(MkdirTest, AlreadyExists) {
   file_system_.mkdir("/test");
   EXPECT_THROW(file_system_.mkdir("/test"), std::invalid_argument);
 }
+
+TEST_F(MkdirTest, Nested) {
+  file_system_.mkdir("/test");
+  file_system_.mkdir("/test/test2");
+  file_system_.mkdir("/test/test2/test3");
+  auto const list = file_system_.ls("/test/test2");
+  EXPECT_EQ(list.size(), 1);
+  EXPECT_EQ(list[0].get_name(), "test3");
+}
+
+TEST_F(MkdirTest, NestedEmpty) {
+  file_system_.mkdir("/test");
+  file_system_.mkdir("/test/test2");
+  file_system_.mkdir("/test/test2/test3");
+  auto const list = file_system_.ls("/test/test2/test3");
+  EXPECT_EQ(list.size(), 0);
+}
