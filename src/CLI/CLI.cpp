@@ -54,6 +54,8 @@ auto CLI::execute(std::string const &command, std::vector<std::string> args) -> 
     ls(std::move(args));
   } else if (command == "mkdir") {
     mkdir(std::move(args));
+  } else if (command == "cd") {
+    cd(std::move(args));
   } else {
     std::cout << "Unknown command. Type 'help' to see available commands.\n";
   }
@@ -69,6 +71,7 @@ auto CLI::help() -> void {
   std::cout << "-\t'basename <path>' - get the filename portion of a pathname\n";
   std::cout << "-\t'ls [-l]' - list directory contents\n";
   std::cout << "-\t'mkdir <path>' - create a directory\n";
+  std::cout << "-\t'cd <path>' - change the working directory\n";
 }
 
 auto CLI::clear() -> void {
@@ -141,4 +144,13 @@ auto CLI::mkdir(std::vector<std::string> args) -> void {
   }
 
   file_system_.mkdir(args[0]);
+}
+
+auto CLI::cd(std::vector<std::string> args) -> void {
+  if (args.size() != 1) {
+    std::cout << "Wrong number of arguments. Usage: cd <path>\n";
+    return;
+  }
+
+  file_system_.cd(args[0]);
 }
