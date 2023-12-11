@@ -39,6 +39,7 @@ public:
 
   [[nodiscard]] auto get_settings() const noexcept -> FSMaker::Settings const &;
 
+  [[nodiscard]] auto pwd() const -> std::string;
   [[nodiscard]] auto ls(std::string const &path) const -> std::vector<Metadata>;
   [[nodiscard]] auto dirname(std::string const &path) const -> std::string;
   [[nodiscard]] auto basename(std::string const &path) const -> std::string;

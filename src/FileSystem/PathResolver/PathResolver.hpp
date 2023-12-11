@@ -17,6 +17,7 @@ public:
   [[nodiscard]] auto delimiter() const -> std::string const &;
 
   [[nodiscard]] auto search(std::string const &path, std::uint64_t search_dir) const -> std::optional<std::uint64_t>;
+  [[nodiscard]] auto trace(const Metadata &file_meta) const -> std::string;
 
   [[nodiscard]] static auto dirname(std::string const &path, std::string const &delimiter) -> std::string;
   [[nodiscard]] static auto basename(std::string const &path, std::string const &delimiter) -> std::string;

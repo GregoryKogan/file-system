@@ -1,5 +1,7 @@
 #include "PathResolver.hpp"
 
+#include <ranges>
+
 PathResolver::PathResolver() : delimiter_("/") {}
 
 PathResolver::PathResolver(std::string delimiter, HandlerBuilder handler_builder)
@@ -15,6 +17,27 @@ auto PathResolver::search(std::string const &path, std::uint64_t search_dir) con
     return get_file(std::vector<std::string>(path_tokens.begin() + 1, path_tokens.end()), 0);
   }
   return get_file(path_tokens, search_dir);
+}
+
+auto PathResolver::trace(const Metadata &file_meta) const -> std::string {
+  std::vector<std::string> path_tokens;
+  path_tokens.push_back(file_meta.get_name());
+
+  auto cur_dir = file_meta.get_parent_first_cluster();
+  while (cur_dir != 0) { // 0 is root dir
+    auto metadata_handler = handler_builder_.build_metadata_handler(cur_dir);
+    auto dir_data = metadata_handler.read_metadata();
+    path_tokens.push_back(dir_data.get_name());
+    cur_dir = dir_data.get_parent_first_cluster();
+  }
+
+  std::string path;
+  for (auto &path_token : std::ranges::reverse_view(path_tokens)) {
+    path += delimiter_;
+    path += path_token;
+  }
+
+  return path;
 }
 
 auto PathResolver::parse(std::string const &path, std::string const &delimiter) -> std::vector<std::string> {
