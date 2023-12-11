@@ -31,9 +31,9 @@ auto PathResolver::trace(std::uint64_t cluster) const -> std::string {
   }
 
   std::string path;
-  for (auto &path_token : std::ranges::reverse_view(path_tokens)) {
+  for (auto it = path_tokens.rbegin(); it != path_tokens.rend(); ++it) {
     path += delimiter_;
-    path += path_token;
+    path += *it;
   }
 
   if (path.empty()) path = delimiter_;
