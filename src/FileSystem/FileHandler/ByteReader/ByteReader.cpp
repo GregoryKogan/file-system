@@ -1,7 +1,5 @@
 #include "ByteReader.hpp"
 
-#include <utility>
-
 ByteReader::ByteReader(ClusterReader cluster_reader, FAT fat, std::uint64_t cluster)
     : cluster_reader_(std::move(cluster_reader)), fat_(std::move(fat)), cluster_(cluster) {}
 

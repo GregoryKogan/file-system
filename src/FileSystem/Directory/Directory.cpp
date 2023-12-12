@@ -4,8 +4,8 @@ auto Directory::from_bytes(std::vector<std::byte> const &bytes) -> Directory {
   auto directory = Directory();
 
   auto step = static_cast<int>(Converter::get_uint64_size());
-  auto cur_offset = 0;
-  while (cur_offset < bytes.size()) {
+  std::int64_t cur_offset = 0;
+  while (static_cast<std::size_t>(cur_offset) < bytes.size()) {
     auto cluster_bytes = std::vector<std::byte>(bytes.begin() + cur_offset, bytes.begin() + cur_offset + step);
     auto cluster = Converter::to_uint64(cluster_bytes);
     cur_offset += step;

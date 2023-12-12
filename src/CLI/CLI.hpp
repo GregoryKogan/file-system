@@ -37,4 +37,5 @@ private:
   auto mkdir(std::vector<std::string> args) -> void;
   auto cd(std::vector<std::string> args) -> void;
   auto touch(std::vector<std::string> args) -> void;
+  auto rmdir(std::vector<std::string> args) -> void;
 };

@@ -69,6 +69,27 @@ auto FileSystem::touch(std::string const &path) -> void {
   add_file_to_dir(parent_dir_cluster.value(), new_file_cluster);
 }
 
+auto FileSystem::rmdir(std::string const &path) -> void {
+  auto dir_cluster = search(path);
+  if (!does_dir_exist(path) || !dir_cluster.has_value()) throw std::invalid_argument("Directory does not exist");
+  if (dir_cluster.value() == 0) throw std::invalid_argument("Cannot remove root directory");
+  if (dir_cluster.value() == working_dir_cluster_) throw std::invalid_argument("Cannot remove working directory");
+  if (!read_dir(dir_cluster.value()).list_files().empty()) throw std::invalid_argument("Directory is not empty");
+
+  auto parent_dir_cluster =
+      handler_builder_.build_metadata_handler(dir_cluster.value()).read_metadata().get_parent_first_cluster();
+
+  auto parent_dir = read_dir(parent_dir_cluster);
+  parent_dir.remove_file(dir_cluster.value());
+  auto parent_meta = handler_builder_.build_metadata_handler(parent_dir_cluster).read_metadata();
+  parent_meta.set_size(parent_dir.to_bytes().size());
+  fat_.shrink(parent_dir_cluster);
+  handler_builder_.build_byte_writer(parent_dir_cluster).write_bytes(0, parent_meta.to_bytes());
+  handler_builder_.build_file_writer(parent_dir_cluster).write(parent_dir.to_bytes());
+
+  fat_.free(dir_cluster.value());
+}
+
 auto FileSystem::cd(std::string const &path) -> void {
   auto dir_cluster = search(path);
   if (!does_dir_exist(path) || !dir_cluster.has_value()) throw std::invalid_argument("Directory does not exist");

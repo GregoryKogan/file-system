@@ -1,11 +1,11 @@
 #include "FileWriter.hpp"
 
-#include <utility>
-
 FileWriter::FileWriter(ByteWriter byte_writer, MetadataHandler metadata_handler, std::uint64_t offset)
     : FileHandler(std::move(metadata_handler), offset), byte_writer_(std::move(byte_writer)) {}
 
 auto FileWriter::write(const std::vector<std::byte> &bytes) -> void {
+  if (bytes.empty()) { return; }
+
   auto meta = get_metadata_handler().read_metadata();
 
   auto new_size = byte_writer_.write_bytes(Metadata::get_metadata_size() + get_offset() + get_handled_size(), bytes);

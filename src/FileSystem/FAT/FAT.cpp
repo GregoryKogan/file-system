@@ -3,8 +3,8 @@
 FAT::FAT() : entries_count_(0), disk_offset_(0) {}
 
 FAT::FAT(DiskReader disk_reader_, DiskWriter disk_writer_, std::uint64_t offset, std::uint64_t entries_count)
-    : disk_reader_(std::move(disk_reader_)), disk_writer_(std::move(disk_writer_)), entries_count_(entries_count),
-      disk_offset_(offset) {}
+    : entries_count_(entries_count), disk_offset_(offset), disk_reader_(std::move(disk_reader_)),
+      disk_writer_(std::move(disk_writer_)) {}
 
 auto FAT::entries_count() const noexcept -> std::uint64_t { return entries_count_; }
 
@@ -60,10 +60,20 @@ auto FAT::free(std::uint64_t cluster_index) -> void {
     entry.status = ClusterStatusOptions::FREE;
     entry.next_cluster = 0;
     set_entry(cluster_index, entry);
-    entry = get_entry(next_cluster_index);
+    cluster_index = next_cluster_index;
+    entry = get_entry(cluster_index);
   }
 
   entry.status = ClusterStatusOptions::FREE;
+  entry.next_cluster = 0;
+  set_entry(cluster_index, entry);
+}
+
+auto FAT::shrink(std::uint64_t cluster_index) -> void {
+  free(get_next(cluster_index));
+
+  auto entry = get_entry(cluster_index);
+  entry.status = ClusterStatusOptions::LAST;
   entry.next_cluster = 0;
   set_entry(cluster_index, entry);
 }

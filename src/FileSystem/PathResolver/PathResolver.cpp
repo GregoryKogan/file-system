@@ -83,7 +83,9 @@ auto PathResolver::basename(std::string const &path, std::string const &delimite
     path_copy = path_copy.substr(0, path_copy.size() - delimiter.size());
   }
 
-  return path_copy.substr(path_copy.find_last_of(delimiter) + 1);
+  auto last_delimiter = path_copy.find_last_of(delimiter);
+  if (last_delimiter == std::string::npos) return path_copy;
+  return path_copy.substr(last_delimiter + 1);
 }
 
 auto PathResolver::get_file(std::vector<std::string> const &path_tokens, std::uint64_t file_cluster) const

@@ -2,6 +2,7 @@
 
 #include "../../FAT/FAT.hpp"
 #include "ClusterReader/ClusterReader.hpp"
+#include <utility>
 
 class ByteReader {
   ClusterReader cluster_reader_;

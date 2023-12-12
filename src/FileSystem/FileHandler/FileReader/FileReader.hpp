@@ -2,7 +2,6 @@
 
 #include "../ByteReader/ByteReader.hpp"
 #include "../FileHandler.hpp"
-#include <utility>
 
 class FileReader : public FileHandler {
   ByteReader byte_reader_;

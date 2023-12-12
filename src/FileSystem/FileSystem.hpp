@@ -17,7 +17,6 @@
 #include <iostream>
 
 class FileSystem {
-  FSMaker fs_maker_;
   FSMaker::Settings settings_ = {};
 
   DiskReader disk_reader_;
@@ -39,13 +38,14 @@ public:
 
   [[nodiscard]] auto get_settings() const noexcept -> FSMaker::Settings const &;
 
-  [[nodiscard]] auto pwd() const -> std::string;
-  [[nodiscard]] auto ls(std::string const &path) const -> std::vector<Metadata>;
   [[nodiscard]] auto dirname(std::string const &path) const -> std::string;
   [[nodiscard]] auto basename(std::string const &path) const -> std::string;
+  [[nodiscard]] auto pwd() const -> std::string;
+  [[nodiscard]] auto ls(std::string const &path) const -> std::vector<Metadata>;
+  auto cd(std::string const &path) -> void;
   auto mkdir(std::string const &path) -> void;
   auto touch(std::string const &path) -> void;
-  auto cd(std::string const &path) -> void;
+  auto rmdir(std::string const &path) -> void;
 
   friend auto operator<<(std::ostream &out_stream, FileSystem const &file_system) -> std::ostream &;
 
