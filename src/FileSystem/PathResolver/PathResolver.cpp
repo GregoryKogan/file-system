@@ -31,7 +31,7 @@ auto PathResolver::trace(std::uint64_t cluster) const -> std::string {
   }
 
   std::string path;
-  for (auto it = path_tokens.rbegin(); it != path_tokens.rend(); ++it) {
+  for (auto it = path_tokens.rbegin(); it != path_tokens.rend(); ++it) { // NOLINT(modernize-loop-convert)
     path += delimiter_;
     path += *it;
   }
