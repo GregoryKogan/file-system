@@ -31,3 +31,8 @@ auto Directory::to_bytes() const -> std::vector<std::byte> {
 auto Directory::list_files() const -> std::vector<std::uint64_t> { return child_clusters_; }
 
 auto Directory::add_file(std::uint64_t cluster) -> void { child_clusters_.push_back(cluster); }
+
+auto Directory::remove_file(std::uint64_t cluster) -> void {
+  auto file_it = std::find(child_clusters_.begin(), child_clusters_.end(), cluster);
+  if (file_it != child_clusters_.end()) child_clusters_.erase(file_it);
+}

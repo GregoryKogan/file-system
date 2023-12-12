@@ -17,4 +17,5 @@ public:
   [[nodiscard]] auto list_files() const -> std::vector<std::uint64_t>;
 
   auto add_file(std::uint64_t cluster) -> void;
+  auto remove_file(std::uint64_t cluster) -> void;
 };
