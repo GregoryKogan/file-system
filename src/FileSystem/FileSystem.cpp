@@ -49,13 +49,24 @@ auto FileSystem::basename(std::string const &path) const -> std::string {
 
 auto FileSystem::mkdir(std::string const &path) -> void {
   if (does_file_exist(path)) throw std::invalid_argument("Already exists");
-  if (!does_dir_exist(dirname(path))) throw std::invalid_argument("Parent directory does not exist");
-
   auto parent_dir_cluster = search(dirname(path));
   if (!parent_dir_cluster.has_value()) throw std::invalid_argument("Parent directory does not exist");
 
   auto new_dir_cluster = alloc_new_dir(basename(path), parent_dir_cluster.value());
   add_file_to_dir(parent_dir_cluster.value(), new_dir_cluster);
+}
+
+auto FileSystem::touch(std::string const &path) -> void {
+  if (does_file_exist(path)) throw std::invalid_argument("Already exists");
+  auto parent_dir_cluster = search(dirname(path));
+  if (!parent_dir_cluster.has_value()) throw std::invalid_argument("Parent directory does not exist");
+
+  auto new_file_cluster = fat_.allocate();
+  auto new_file_byte_writer = handler_builder_.build_byte_writer(new_file_cluster);
+  auto new_file_meta = Metadata(basename(path), 0, new_file_cluster, parent_dir_cluster.value(), false);
+  new_file_byte_writer.write_bytes(0, new_file_meta.to_bytes());
+
+  add_file_to_dir(parent_dir_cluster.value(), new_file_cluster);
 }
 
 auto FileSystem::cd(std::string const &path) -> void {
