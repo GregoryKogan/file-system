@@ -49,6 +49,25 @@ auto FAT::allocate_next(std::uint64_t cluster_index) -> std::uint64_t {
   return next_cluster_index;
 }
 
+auto FAT::free(std::uint64_t cluster_index) -> void {
+  if (cluster_index >= entries_count_) { throw std::invalid_argument("Invalid cluster index"); }
+
+  auto entry = get_entry(cluster_index);
+  while (entry.status != ClusterStatusOptions::LAST) {
+    if (entry.status == ClusterStatusOptions::FREE) throw std::runtime_error("Cannot free unallocated cluster");
+
+    auto next_cluster_index = entry.next_cluster;
+    entry.status = ClusterStatusOptions::FREE;
+    entry.next_cluster = 0;
+    set_entry(cluster_index, entry);
+    entry = get_entry(next_cluster_index);
+  }
+
+  entry.status = ClusterStatusOptions::FREE;
+  entry.next_cluster = 0;
+  set_entry(cluster_index, entry);
+}
+
 auto FAT::set_next(std::uint64_t cluster_index, std::uint64_t next_cluster_index) -> void {
   if (cluster_index >= entries_count_ || next_cluster_index >= entries_count_) {
     throw std::runtime_error("Invalid cluster index");

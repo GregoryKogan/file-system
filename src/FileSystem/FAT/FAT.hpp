@@ -28,6 +28,7 @@ public:
 
   [[nodiscard]] auto allocate() -> std::uint64_t;
   [[nodiscard]] auto allocate_next(std::uint64_t cluster_index) -> std::uint64_t;
+  auto free(std::uint64_t cluster_index) -> void;
   auto set_next(std::uint64_t cluster_index, std::uint64_t next_cluster_index) -> void;
   [[nodiscard]] auto get_next(std::uint64_t cluster_index) -> std::uint64_t;
   [[nodiscard]] auto is_last(std::uint64_t cluster_index) -> bool;
