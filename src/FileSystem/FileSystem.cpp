@@ -59,9 +59,11 @@ auto FileSystem::mkdir(std::string const &path) -> void {
 }
 
 auto FileSystem::touch(std::string const &path) -> void {
-  if (does_file_exist(path)) throw std::invalid_argument("Already exists");
+  if (does_file_exist(path)) return;
   auto parent_dir_cluster = search(dirname(path));
-  if (!parent_dir_cluster.has_value()) throw std::invalid_argument("Parent directory does not exist");
+  if (!does_dir_exist(dirname(path)) || !parent_dir_cluster.has_value()) {
+    throw std::invalid_argument("Parent directory does not exist");
+  }
 
   auto new_file_cluster = fat_.allocate();
   auto new_file_byte_writer = handler_builder_.build_byte_writer(new_file_cluster);
