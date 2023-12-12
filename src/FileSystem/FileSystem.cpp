@@ -1,5 +1,7 @@
 #include "FileSystem.hpp"
 
+#include <utility>
+
 FileSystem::FileSystem(std::string const &path) {
   auto ifs = std::make_shared<std::ifstream>(path, std::ios::binary | std::ios::in);
   auto ofs = std::make_shared<std::ofstream>(path, std::ios::binary | std::ios::out | std::ios::in);
@@ -79,15 +81,8 @@ auto FileSystem::rmdir(std::string const &path) -> void {
   auto parent_dir_cluster =
       handler_builder_.build_metadata_handler(dir_cluster.value()).read_metadata().get_parent_first_cluster();
 
-  auto parent_dir = read_dir(parent_dir_cluster);
-  parent_dir.remove_file(dir_cluster.value());
-  auto parent_meta = handler_builder_.build_metadata_handler(parent_dir_cluster).read_metadata();
-  parent_meta.set_size(parent_dir.to_bytes().size());
-  fat_.shrink(parent_dir_cluster);
-  handler_builder_.build_byte_writer(parent_dir_cluster).write_bytes(0, parent_meta.to_bytes());
-  handler_builder_.build_file_writer(parent_dir_cluster).write(parent_dir.to_bytes());
-
   fat_.free(dir_cluster.value());
+  remove_file_from_dir(parent_dir_cluster, dir_cluster.value());
 }
 
 auto FileSystem::cd(std::string const &path) -> void {
@@ -158,6 +153,21 @@ auto FileSystem::add_file_to_dir(std::uint64_t parent_cluster, std::uint64_t chi
   auto parent_dir = read_dir(parent_cluster);
   parent_dir.add_file(child_cluster);
   handler_builder_.build_file_writer(parent_cluster).write(parent_dir.to_bytes());
+}
+
+auto FileSystem::remove_file_from_dir(std::uint64_t parent_cluster, std::uint64_t child_cluster) -> void {
+  auto parent_dir = read_dir(parent_cluster);
+  parent_dir.remove_file(child_cluster);
+  auto parent_meta = handler_builder_.build_metadata_handler(parent_cluster).read_metadata();
+  overwrite_file(parent_cluster, parent_meta, parent_dir.to_bytes());
+}
+
+auto FileSystem::overwrite_file(std::uint64_t cluster, Metadata old_meta, std::vector<std::byte> const &bytes) -> void {
+  auto new_meta = std::move(old_meta);
+  new_meta.set_size(bytes.size());
+  fat_.shrink(cluster);
+  handler_builder_.build_byte_writer(cluster).write_bytes(0, new_meta.to_bytes());
+  handler_builder_.build_file_writer(cluster).write(bytes);
 }
 
 auto operator<<(std::ostream &out_stream, FileSystem const &file_system) -> std::ostream & {

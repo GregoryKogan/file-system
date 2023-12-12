@@ -61,4 +61,6 @@ private:
   [[nodiscard]] auto does_dir_exist(std::string const &path) const -> bool;
   [[nodiscard]] auto alloc_new_dir(std::string const &name, std::uint64_t parent_cluster) -> std::uint64_t;
   auto add_file_to_dir(std::uint64_t parent_cluster, std::uint64_t child_cluster) const -> void;
+  auto remove_file_from_dir(std::uint64_t parent_cluster, std::uint64_t child_cluster) -> void;
+  auto overwrite_file(std::uint64_t cluster, Metadata old_meta, std::vector<std::byte> const &bytes) -> void;
 };
