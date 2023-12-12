@@ -36,4 +36,5 @@ private:
   auto ls(std::vector<std::string> args) -> void;
   auto mkdir(std::vector<std::string> args) -> void;
   auto cd(std::vector<std::string> args) -> void;
+  auto touch(std::vector<std::string> args) -> void;
 };
