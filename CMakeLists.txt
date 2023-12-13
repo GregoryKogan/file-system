@@ -22,21 +22,6 @@ add_executable(
     ${SOURCES}
 )
 
-if(CMAKE_BUILD_TYPE STREQUAL "Release")
-  if(MSVC)
-    target_compile_options(cli PRIVATE /O2)
-  else()
-    target_compile_options(cli PRIVATE -O3)
-  endif()
-elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
-  if(MSVC)
-    target_compile_options(cli PRIVATE /W4 /WX)
-  else()
-    target_compile_options(cli PRIVATE -Wall -Wextra -pedantic -Werror -g -fsanitize=address -fsanitize=undefined -fsanitize=unsigned-integer-overflow)
-    target_link_libraries(cli -fsanitize=address -fsanitize=undefined -fsanitize=unsigned-integer-overflow)
-  endif()
-endif()
-
 file(GLOB_RECURSE TESTS_SOURCES "test/*.cpp")
 add_executable(
   tests
@@ -47,3 +32,22 @@ target_link_libraries(tests GTest::gtest_main)
 
 include(GoogleTest)
 gtest_discover_tests(tests)
+
+
+if(CMAKE_BUILD_TYPE STREQUAL "Release")
+  if(MSVC)
+    target_compile_options(cli PRIVATE /O2)
+  else()
+    target_compile_options(cli PRIVATE -O3)
+  endif()
+elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
+  if(MSVC)
+    target_compile_options(cli PRIVATE /W4 /WX)
+    target_compile_options(tests PRIVATE /W4 /WX)
+  else()
+    target_compile_options(cli PRIVATE -Wall -Wextra -pedantic -Werror -g -fsanitize=address -fsanitize=undefined -fsanitize=unsigned-integer-overflow)
+    target_compile_options(tests PRIVATE -Wall -Wextra -pedantic -Werror -g -fsanitize=address -fsanitize=undefined -fsanitize=unsigned-integer-overflow)
+    target_link_options(cli PRIVATE -fsanitize=address -fsanitize=undefined -fsanitize=unsigned-integer-overflow)
+    target_link_options(tests PRIVATE -fsanitize=address -fsanitize=undefined -fsanitize=unsigned-integer-overflow)
+  endif()
+endif()
