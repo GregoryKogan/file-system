@@ -18,6 +18,7 @@ public:
 
   [[nodiscard]] auto search(std::string const &path, std::uint64_t search_dir) const -> std::optional<std::uint64_t>;
   [[nodiscard]] auto trace(std::uint64_t cluster) const -> std::string;
+  [[nodiscard]] auto is_descendant(std::uint64_t descendant, std::uint64_t possible_ancestor) const -> bool;
 
   [[nodiscard]] static auto dirname(std::string const &path, std::string const &delimiter) -> std::string;
   [[nodiscard]] static auto basename(std::string const &path, std::string const &delimiter) -> std::string;

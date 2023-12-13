@@ -97,10 +97,10 @@ auto FileSystem::rm(std::string const &path, bool recursive) -> void {
   }
 
   if (handler_builder_.build_metadata_handler(file_cluster.value()).read_metadata().is_directory()) {
-    rmdir(path);
-  } else {
-    rmfile(path);
+    throw std::invalid_argument("Cannot remove directory with rm");
   }
+
+  rmfile(path);
 }
 
 auto FileSystem::rm_recursive(std::string const &path) -> void {
@@ -113,8 +113,10 @@ auto FileSystem::rm_recursive(std::string const &path) -> void {
     rmfile(path);
     return;
   }
-  if (meta.get_first_cluster() == 0) throw std::invalid_argument("Cannot remove root directory");
-  if (meta.get_first_cluster() == working_dir_cluster_) throw std::invalid_argument("Cannot remove working directory");
+
+  if (path_resolver_.is_descendant(working_dir_cluster_, meta.get_first_cluster())) {
+    throw std::invalid_argument("Cannot remove working directory or its ancestor");
+  }
 
   auto dir = read_dir(meta.get_first_cluster());
   auto child_clusters = dir.list_files();

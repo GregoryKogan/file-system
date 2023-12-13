@@ -41,6 +41,18 @@ auto PathResolver::trace(std::uint64_t cluster) const -> std::string {
   return path;
 }
 
+auto PathResolver::is_descendant(std::uint64_t descendant, std::uint64_t possible_ancestor) const -> bool {
+  if (possible_ancestor == 0) return true; // everything is descendant of root dir
+
+  auto cur_dir = descendant;
+  while (cur_dir != 0) { // 0 is root dir
+    if (cur_dir == possible_ancestor) return true;
+    cur_dir = handler_builder_.build_metadata_handler(cur_dir).read_metadata().get_parent_first_cluster();
+  }
+
+  return false;
+}
+
 auto PathResolver::parse(std::string const &path, std::string const &delimiter) -> std::vector<std::string> {
   if (path == delimiter) return std::vector<std::string>{""};
 
