@@ -83,7 +83,7 @@ auto CLI::help() -> void {
   std::cout << "-\t'cd <path>' - change the working directory\n";
   std::cout << "-\t'touch <path>' - create a file\n";
   std::cout << "-\t'rmdir <path>' - remove a directory\n";
-  std::cout << "-\t'rm <path>' - remove a file\n";
+  std::cout << "-\t'rm [-r] <path>' - remove directory entries\n";
 }
 
 auto CLI::clear() -> void {
@@ -188,10 +188,19 @@ auto CLI::rmdir(std::vector<std::string> args) -> void {
 }
 
 auto CLI::rm(std::vector<std::string> args) -> void {
-  if (args.size() != 1) {
-    std::cout << "Wrong number of arguments. Usage: rm <path>\n";
+  if (args.size() != 1 && args.size() != 2) {
+    std::cout << "Wrong number of arguments. Usage: rm [-r] <path>\n";
     return;
   }
 
-  file_system_.rm(args[0]);
+  if (args.size() == 1) {
+    file_system_.rm(args[0]);
+  } else {
+    if (args[0] != "-r") {
+      std::cout << "Wrong arguments. Usage: rm [-r] <path>\n";
+      return;
+    }
+
+    file_system_.rm_recursive(args[1]);
+  }
 }
