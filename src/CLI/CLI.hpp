@@ -38,4 +38,5 @@ private:
   auto cd(std::vector<std::string> args) -> void;
   auto touch(std::vector<std::string> args) -> void;
   auto rmdir(std::vector<std::string> args) -> void;
+  auto rm(std::vector<std::string> args) -> void;
 };

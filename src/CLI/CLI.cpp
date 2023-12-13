@@ -62,6 +62,8 @@ auto CLI::execute(std::string const &command, std::vector<std::string> args) -> 
     touch(std::move(args));
   } else if (command == "rmdir") {
     rmdir(std::move(args));
+  } else if (command == "rm") {
+    rm(std::move(args));
   } else {
     std::cout << "Unknown command. Type 'help' to see available commands.\n";
   }
@@ -81,6 +83,7 @@ auto CLI::help() -> void {
   std::cout << "-\t'cd <path>' - change the working directory\n";
   std::cout << "-\t'touch <path>' - create a file\n";
   std::cout << "-\t'rmdir <path>' - remove a directory\n";
+  std::cout << "-\t'rm <path>' - remove a file\n";
 }
 
 auto CLI::clear() -> void {
@@ -182,4 +185,13 @@ auto CLI::rmdir(std::vector<std::string> args) -> void {
   }
 
   file_system_.rmdir(args[0]);
+}
+
+auto CLI::rm(std::vector<std::string> args) -> void {
+  if (args.size() != 1) {
+    std::cout << "Wrong number of arguments. Usage: rm <path>\n";
+    return;
+  }
+
+  file_system_.rm(args[0]);
 }
