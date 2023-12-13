@@ -13,6 +13,7 @@
 #include <cstdint>
 #include <sstream>
 #include <string>
+#include <utility>
 
 #include <iostream>
 
@@ -50,6 +51,8 @@ public:
   auto touch(std::string const &path) -> void;
   auto rmdir(std::string const &path) -> void;
   auto rm(std::string const &path, bool recursive = false) -> void;
+  auto import_file(std::istream &in_stream, std::string const &path) -> void;
+  auto export_file(std::string const &path, std::ostream &out_stream) const -> void;
 
   friend auto operator<<(std::ostream &out_stream, FileSystem const &file_system) -> std::ostream &;
 
@@ -61,6 +64,7 @@ private:
   [[nodiscard]] auto get_metadata_from_clusters(const std::vector<std::uint64_t> &clusters) const
       -> std::vector<Metadata>;
   [[nodiscard]] auto search(std::string const &path) const -> std::optional<std::uint64_t>;
+  [[nodiscard]] auto does_exist(std::string const &path) const -> bool;
   [[nodiscard]] auto does_file_exist(std::string const &path) const -> bool;
   [[nodiscard]] auto does_dir_exist(std::string const &path) const -> bool;
   [[nodiscard]] auto alloc_new_dir(std::string const &name, std::uint64_t parent_cluster) -> std::uint64_t;

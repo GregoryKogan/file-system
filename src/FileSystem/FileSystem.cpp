@@ -1,7 +1,5 @@
 #include "FileSystem.hpp"
 
-#include <utility>
-
 FileSystem::FileSystem(std::string const &path) {
   auto ifs = std::make_shared<std::ifstream>(path, std::ios::binary | std::ios::in);
   auto ofs = std::make_shared<std::ofstream>(path, std::ios::binary | std::ios::out | std::ios::in);
@@ -75,7 +73,7 @@ auto FileSystem::get_writer(std::string const &path) -> FileWriter {
 }
 
 auto FileSystem::mkdir(std::string const &path) -> void {
-  if (does_file_exist(path)) throw std::invalid_argument("Already exists");
+  if (does_exist(path)) throw std::invalid_argument("Already exists");
   auto parent_dir_cluster = search(dirname(path));
   if (!parent_dir_cluster.has_value()) throw std::invalid_argument("Parent directory does not exist");
 
@@ -126,6 +124,38 @@ auto FileSystem::rm(std::string const &path, bool recursive) -> void {
   }
 
   rmfile(path);
+}
+
+auto FileSystem::import_file(std::istream &in_stream, std::string const &path) -> void {
+  if (does_file_exist(path)) throw std::invalid_argument("File already exists");
+
+  touch(path);
+  auto file_writer = get_writer(path);
+  file_writer.set_offset(0);
+
+  auto buffer = std::vector<std::byte>(settings_.cluster_size);
+  while (in_stream.read(reinterpret_cast<char *>(buffer.data()), // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
+                        static_cast<std::streamsize>(settings_.cluster_size))) {
+    file_writer.write_next(buffer);
+  }
+}
+
+auto FileSystem::export_file(std::string const &path, std::ostream &out_stream) const -> void {
+  if (!does_file_exist(path)) throw std::invalid_argument("File does not exist");
+
+  auto file_reader = get_reader(path);
+  file_reader.set_block_size(settings_.cluster_size);
+  file_reader.set_offset(0);
+
+  auto buffer = file_reader.read_next();
+  while (!buffer.empty()) {
+    out_stream.write(
+        reinterpret_cast<char const *>(buffer.data()), // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
+        static_cast<std::streamsize>(buffer.size()));
+    buffer = file_reader.read_next();
+  }
+
+  out_stream.flush();
 }
 
 auto FileSystem::rm_recursive(std::string const &path) -> void {
@@ -213,7 +243,15 @@ auto FileSystem::search(std::string const &path) const -> std::optional<std::uin
   return path_resolver_.search(path, working_dir_cluster_);
 }
 
-auto FileSystem::does_file_exist(std::string const &path) const -> bool { return search(path).has_value(); }
+auto FileSystem::does_exist(std::string const &path) const -> bool { return search(path).has_value(); }
+
+auto FileSystem::does_file_exist(std::string const &path) const -> bool {
+  auto dir_cluster = search(path);
+  if (!dir_cluster.has_value()) return false;
+
+  auto metadata_handler = handler_builder_.build_metadata_handler(dir_cluster.value());
+  return !metadata_handler.read_metadata().is_directory();
+}
 
 auto FileSystem::does_dir_exist(std::string const &path) const -> bool {
   auto dir_cluster = search(path);
