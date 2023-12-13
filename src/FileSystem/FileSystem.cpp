@@ -133,9 +133,16 @@ auto FileSystem::import_file(std::istream &in_stream, std::string const &path) -
   auto file_writer = get_writer(path);
   file_writer.set_offset(0);
 
-  auto buffer = std::vector<std::byte>(settings_.cluster_size);
-  while (in_stream.read(reinterpret_cast<char *>(buffer.data()), // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
-                        static_cast<std::streamsize>(settings_.cluster_size))) {
+  in_stream.seekg(0);
+  std::istreambuf_iterator<char> iter(in_stream);
+  std::istreambuf_iterator<char> end;
+
+  while (iter != end) {
+    std::vector<std::byte> buffer;
+    buffer.reserve(settings_.cluster_size);
+    for (std::size_t i = 0; i < settings_.cluster_size && iter != end; ++iter, ++i) {
+      buffer.push_back(static_cast<std::byte>(*iter));
+    }
     file_writer.write_next(buffer);
   }
 }
