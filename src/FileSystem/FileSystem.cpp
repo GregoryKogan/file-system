@@ -87,9 +87,15 @@ auto FileSystem::rmdir(std::string const &path) -> void {
   remove_file_from_dir(parent_dir_cluster, dir_cluster.value());
 }
 
-auto FileSystem::rm(std::string const &path) -> void {
+auto FileSystem::rm(std::string const &path, bool recursive) -> void {
   auto file_cluster = search(path);
   if (!file_cluster.has_value()) throw std::invalid_argument("No such file or directory");
+
+  if (recursive) {
+    rm_recursive(path);
+    return;
+  }
+
   if (handler_builder_.build_metadata_handler(file_cluster.value()).read_metadata().is_directory()) {
     rmdir(path);
   } else {

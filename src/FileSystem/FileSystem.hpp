@@ -46,8 +46,7 @@ public:
   auto mkdir(std::string const &path) -> void;
   auto touch(std::string const &path) -> void;
   auto rmdir(std::string const &path) -> void;
-  auto rm(std::string const &path) -> void;
-  auto rm_recursive(std::string const &path) -> void;
+  auto rm(std::string const &path, bool recursive = false) -> void;
 
   friend auto operator<<(std::ostream &out_stream, FileSystem const &file_system) -> std::ostream &;
 
@@ -66,4 +65,5 @@ private:
   auto remove_file_from_dir(std::uint64_t parent_cluster, std::uint64_t child_cluster) -> void;
   auto overwrite_file(std::uint64_t cluster, Metadata old_meta, std::vector<std::byte> const &bytes) -> void;
   auto rmfile(std::string const &path) -> void;
+  auto rm_recursive(std::string const &path) -> void;
 };

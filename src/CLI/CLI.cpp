@@ -193,14 +193,20 @@ auto CLI::rm(std::vector<std::string> args) -> void {
     return;
   }
 
+  bool recursive = false;
+  std::string path;
+
   if (args.size() == 1) {
-    file_system_.rm(args[0]);
-  } else {
-    if (args[0] != "-r") {
+    path = args[0];
+  } else if (args.size() == 2) {
+    if (args[0] == "-r") {
+      recursive = true;
+      path = args[1];
+    } else {
       std::cout << "Wrong arguments. Usage: rm [-r] <path>\n";
       return;
     }
-
-    file_system_.rm_recursive(args[1]);
   }
+
+  file_system_.rm(path, recursive);
 }
