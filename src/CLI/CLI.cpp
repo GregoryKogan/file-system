@@ -52,6 +52,8 @@ auto CLI::execute(std::string const &command, std::vector<std::string> args) -> 
     basename(std::move(args));
   } else if (command == "pwd") {
     pwd();
+  } else if (command == "cat") {
+    cat(std::move(args));
   } else if (command == "ls") {
     ls(std::move(args));
   } else if (command == "mkdir") {
@@ -79,6 +81,7 @@ auto CLI::help() -> void {
   std::cout << "-\t'basename <path>' - get the filename portion of a pathname\n";
   std::cout << "-\t'pwd' - print current working directory\n";
   std::cout << "-\t'ls [-l]' - list directory contents\n";
+  std::cout << "-\t'cat <path>' - print file contents\n";
   std::cout << "-\t'mkdir <path>' - create a directory\n";
   std::cout << "-\t'cd <path>' - change the working directory\n";
   std::cout << "-\t'touch <path>' - create a file\n";
@@ -149,6 +152,16 @@ auto CLI::ls(std::vector<std::string> args) -> void {
 
   std::cout << file_system_.basename(path) << "\n";
   for (auto const &file : files) { std::cout << "|----" << Metadata::to_string(file, verbose) << '\n'; }
+}
+
+auto CLI::cat(std::vector<std::string> args) -> void {
+  if (args.size() != 1) {
+    std::cout << "Wrong number of arguments. Usage: cat <path>\n";
+    return;
+  }
+
+  file_system_.cat(args[0], std::cout);
+  std::cout << '\n';
 }
 
 auto CLI::mkdir(std::vector<std::string> args) -> void {
