@@ -14,6 +14,7 @@ auto FileReader::read() -> std::vector<std::byte> {
   auto size = std::min(block_size_, meta.get_size() - get_offset() - get_handled_size());
   auto offset = Metadata::get_metadata_size() + get_offset() + get_handled_size();
 
+  if (size == 0) { return {}; }
   return byte_reader_.read_bytes(offset, size);
 }
 
