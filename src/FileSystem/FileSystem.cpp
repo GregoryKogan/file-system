@@ -130,6 +130,24 @@ auto FileSystem::cd(std::string const &path) -> void {
   working_dir_cluster_ = dir_cluster.value();
 }
 
+auto FileSystem::cat(std::string const &path, std::ostream &out_stream) const -> void {
+  auto file_cluster = search(path);
+  if (!file_cluster.has_value()) throw std::invalid_argument("File does not exist");
+  if (handler_builder_.build_metadata_handler(file_cluster.value()).read_metadata().is_directory()) {
+    throw std::invalid_argument("Cannot cat directory");
+  }
+
+  auto file_reader = handler_builder_.build_file_reader(file_cluster.value());
+  file_reader.set_block_size(settings_.cluster_size);
+  file_reader.set_offset(0);
+
+  auto file_bytes = file_reader.read_next();
+  while (!file_bytes.empty()) {
+    out_stream << Converter::to_string(file_bytes);
+    file_bytes = file_reader.read_next();
+  }
+}
+
 auto FileSystem::read_settings() -> void {
   disk_reader_.set_offset(0);
   disk_reader_.set_block_size(Converter::get_uint64_size());
