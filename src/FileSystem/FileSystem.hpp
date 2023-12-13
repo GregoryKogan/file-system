@@ -47,6 +47,7 @@ public:
   auto touch(std::string const &path) -> void;
   auto rmdir(std::string const &path) -> void;
   auto rm(std::string const &path) -> void;
+  auto rm_recursive(std::string const &path) -> void;
 
   friend auto operator<<(std::ostream &out_stream, FileSystem const &file_system) -> std::ostream &;
 

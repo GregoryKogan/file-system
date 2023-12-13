@@ -89,12 +89,31 @@ auto FileSystem::rmdir(std::string const &path) -> void {
 
 auto FileSystem::rm(std::string const &path) -> void {
   auto file_cluster = search(path);
-  if (!file_cluster.has_value()) throw std::invalid_argument("File does not exist");
+  if (!file_cluster.has_value()) throw std::invalid_argument("No such file or directory");
   if (handler_builder_.build_metadata_handler(file_cluster.value()).read_metadata().is_directory()) {
     rmdir(path);
   } else {
     rmfile(path);
   }
+}
+
+auto FileSystem::rm_recursive(std::string const &path) -> void {
+  auto file_cluster = search(path);
+  if (!file_cluster.has_value()) throw std::invalid_argument("No such file or directory");
+
+  auto meta = handler_builder_.build_metadata_handler(file_cluster.value()).read_metadata();
+
+  if (!meta.is_directory()) {
+    rmfile(path);
+    return;
+  }
+  if (meta.get_first_cluster() == 0) throw std::invalid_argument("Cannot remove root directory");
+  if (meta.get_first_cluster() == working_dir_cluster_) throw std::invalid_argument("Cannot remove working directory");
+
+  auto dir = read_dir(meta.get_first_cluster());
+  auto child_clusters = dir.list_files();
+  for (auto const &child_cluster : child_clusters) { rm_recursive(path_resolver_.trace(child_cluster)); }
+  rmdir(path);
 }
 
 auto FileSystem::cd(std::string const &path) -> void {
