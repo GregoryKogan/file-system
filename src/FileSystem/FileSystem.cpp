@@ -87,6 +87,16 @@ auto FileSystem::rmdir(std::string const &path) -> void {
   remove_file_from_dir(parent_dir_cluster, dir_cluster.value());
 }
 
+auto FileSystem::rm(std::string const &path) -> void {
+  auto file_cluster = search(path);
+  if (!file_cluster.has_value()) throw std::invalid_argument("File does not exist");
+  if (handler_builder_.build_metadata_handler(file_cluster.value()).read_metadata().is_directory()) {
+    rmdir(path);
+  } else {
+    rmfile(path);
+  }
+}
+
 auto FileSystem::cd(std::string const &path) -> void {
   auto dir_cluster = search(path);
   if (!does_dir_exist(path) || !dir_cluster.has_value()) throw std::invalid_argument("Directory does not exist");
@@ -170,6 +180,20 @@ auto FileSystem::overwrite_file(std::uint64_t cluster, Metadata old_meta, std::v
   fat_.shrink(cluster);
   handler_builder_.build_byte_writer(cluster).write_bytes(0, new_meta.to_bytes());
   handler_builder_.build_file_writer(cluster).write(bytes);
+}
+
+auto FileSystem::rmfile(std::string const &path) -> void {
+  auto file_cluster = search(path);
+  if (!file_cluster.has_value()) throw std::invalid_argument("File does not exist");
+  if (handler_builder_.build_metadata_handler(file_cluster.value()).read_metadata().is_directory()) {
+    throw std::invalid_argument("Cannot remove directory with rmfile");
+  }
+
+  auto parent_dir_cluster =
+      handler_builder_.build_metadata_handler(file_cluster.value()).read_metadata().get_parent_first_cluster();
+
+  fat_.free(file_cluster.value());
+  remove_file_from_dir(parent_dir_cluster, file_cluster.value());
 }
 
 auto operator<<(std::ostream &out_stream, FileSystem const &file_system) -> std::ostream & {
