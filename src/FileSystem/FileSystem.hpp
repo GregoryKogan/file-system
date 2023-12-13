@@ -40,6 +40,8 @@ public:
 
   [[nodiscard]] auto dirname(std::string const &path) const -> std::string;
   [[nodiscard]] auto basename(std::string const &path) const -> std::string;
+  [[nodiscard]] auto get_reader(std::string const &path) const -> FileReader;
+  [[nodiscard]] auto get_writer(std::string const &path) -> FileWriter;
   [[nodiscard]] auto pwd() const -> std::string;
   [[nodiscard]] auto ls(std::string const &path) const -> std::vector<Metadata>;
   auto cd(std::string const &path) -> void;

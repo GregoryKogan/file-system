@@ -49,6 +49,31 @@ auto FileSystem::basename(std::string const &path) const -> std::string {
   return PathResolver::basename(path, path_resolver_.delimiter());
 }
 
+auto FileSystem::get_reader(std::string const &path) const -> FileReader {
+  auto file_cluster = search(path);
+  if (!file_cluster.has_value()) throw std::invalid_argument("File does not exist");
+  if (handler_builder_.build_metadata_handler(file_cluster.value()).read_metadata().is_directory()) {
+    throw std::invalid_argument("Cannot open directory with get_reader");
+  }
+
+  auto file_reader = handler_builder_.build_file_reader(file_cluster.value());
+  file_reader.set_block_size(settings_.cluster_size);
+  file_reader.set_offset(0);
+  return file_reader;
+}
+
+auto FileSystem::get_writer(std::string const &path) -> FileWriter {
+  auto file_cluster = search(path);
+  if (!file_cluster.has_value()) throw std::invalid_argument("File does not exist");
+  if (handler_builder_.build_metadata_handler(file_cluster.value()).read_metadata().is_directory()) {
+    throw std::invalid_argument("Cannot open directory with get_writer");
+  }
+
+  auto file_writer = handler_builder_.build_file_writer(file_cluster.value());
+  file_writer.set_offset(0);
+  return file_writer;
+}
+
 auto FileSystem::mkdir(std::string const &path) -> void {
   if (does_file_exist(path)) throw std::invalid_argument("Already exists");
   auto parent_dir_cluster = search(dirname(path));
