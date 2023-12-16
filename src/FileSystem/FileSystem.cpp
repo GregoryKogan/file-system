@@ -39,6 +39,12 @@ auto FileSystem::ls(std::string const &path) const -> std::vector<Metadata> {
   return get_metadata_from_clusters(child_clusters);
 }
 
+auto FileSystem::stat(std::string const &path) const -> Metadata {
+  auto file_cluster = search(path);
+  if (!file_cluster.has_value()) throw std::invalid_argument("File does not exist");
+  return handler_builder_.build_metadata_handler(file_cluster.value()).read_metadata();
+}
+
 auto FileSystem::dirname(std::string const &path) const -> std::string {
   return PathResolver::dirname(path, path_resolver_.delimiter());
 }

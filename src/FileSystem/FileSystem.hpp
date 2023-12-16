@@ -45,6 +45,7 @@ public:
   [[nodiscard]] auto get_writer(std::string const &path) -> FileWriter;
   [[nodiscard]] auto pwd() const -> std::string;
   [[nodiscard]] auto ls(std::string const &path) const -> std::vector<Metadata>;
+  [[nodiscard]] auto stat(std::string const &path) const -> Metadata;
   auto cd(std::string const &path) -> void;
   auto cat(std::string const &path, std::ostream &out_stream) const -> void;
   auto mkdir(std::string const &path) -> void;
