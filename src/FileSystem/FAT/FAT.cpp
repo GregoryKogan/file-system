@@ -70,9 +70,8 @@ auto FAT::free(std::uint64_t cluster_index) -> void {
 }
 
 auto FAT::shrink(std::uint64_t cluster_index) -> void {
-  free(get_next(cluster_index));
-
   auto entry = get_entry(cluster_index);
+  if (entry.status != ClusterStatusOptions::LAST) free(get_next(cluster_index));
   entry.status = ClusterStatusOptions::LAST;
   entry.next_cluster = 0;
   set_entry(cluster_index, entry);
