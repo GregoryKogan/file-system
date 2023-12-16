@@ -80,7 +80,7 @@ TEST_F(ImportTest, ImportToDir) {
 }
 
 TEST_F(ImportTest, ImportShortRealFile) {
-  const auto *const host_fs_file_path = "../test/assets/short_sample.txt";
+  const auto *const host_fs_file_path = "../assets/short_sample.txt";
 
   std::ifstream file_to_import(host_fs_file_path);
   if (!file_to_import.is_open()) throw std::runtime_error("Cannot open file " + std::string(host_fs_file_path));
@@ -108,7 +108,7 @@ TEST_F(ImportTest, ImportShortRealFile) {
 }
 
 TEST_F(ImportTest, ImportLongRealFile) {
-  const auto *const host_fs_file_path = "../test/assets/long_sample.txt";
+  const auto *const host_fs_file_path = "../assets/long_sample.txt";
 
   std::ifstream file_to_import(host_fs_file_path);
   if (!file_to_import.is_open()) throw std::runtime_error("Cannot open file " + std::string(host_fs_file_path));
