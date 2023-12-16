@@ -22,7 +22,7 @@ add_executable(
     ${SOURCES}
 )
 
-file(GLOB_RECURSE TESTS_SOURCES "test/*.cpp")
+file(GLOB_RECURSE TESTS_SOURCES "tests/*.cpp")
 add_executable(
   tests
   ${SOURCES}
