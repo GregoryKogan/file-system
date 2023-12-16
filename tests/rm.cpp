@@ -6,8 +6,8 @@ class RmTest : public testing::Test {
 protected:
   // NOLINTBEGIN(cppcoreguidelines-non-private-member-variables-in-classes)
   std::string const PATH = "test.fs";
-  std::uint64_t const SIZE = 2048;
-  std::uint64_t const CLUSTER_SIZE = 64;
+  std::uint64_t const SIZE = 32000;
+  std::uint64_t const CLUSTER_SIZE = 256;
 
   FileSystem file_system_;
   // NOLINTEND(cppcoreguidelines-non-private-member-variables-in-classes)
@@ -47,8 +47,17 @@ TEST_F(RmTest, RemoveFile) {
 }
 
 TEST_F(RmTest, RemoveEmptyDirectory) {
-  EXPECT_THROW(file_system_.rm("empty"), std::invalid_argument);
-  EXPECT_THROW(file_system_.rm("dir/nested/empty"), std::invalid_argument);
+  file_system_.rm("empty");
+  file_system_.rm("dir/nested/empty");
+
+  auto root_list = file_system_.ls("/");
+  ASSERT_EQ(root_list.size(), 2);
+  EXPECT_EQ(root_list[0].get_name(), "dir");
+  EXPECT_EQ(root_list[1].get_name(), "file");
+
+  auto nested_list = file_system_.ls("dir/nested");
+  ASSERT_EQ(nested_list.size(), 1);
+  EXPECT_EQ(nested_list[0].get_name(), "file");
 }
 
 TEST_F(RmTest, RemoveRecursivelyEmptyDirectory) {

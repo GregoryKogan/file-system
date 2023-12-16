@@ -120,7 +120,8 @@ auto FileSystem::rm(std::string const &path, bool recursive) -> void {
   }
 
   if (handler_builder_.build_metadata_handler(file_cluster.value()).read_metadata().is_directory()) {
-    throw std::invalid_argument("Cannot remove directory with rm");
+    rmdir(path);
+    return;
   }
 
   rmfile(path);
