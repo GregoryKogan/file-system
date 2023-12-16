@@ -168,9 +168,15 @@ auto FAT::to_string(FAT const &fat) -> std::string {
   oss << "FAT entries count: " << entries.size() << '\n';
   oss << "FAT entries:" << '\n';
 
+  const int CLUSTERS_PER_LINE = 4; // Number of clusters to display per line
+
+  int clusters_count = 0;
   for (std::size_t i = 0; i < entries.size(); ++i) {
     auto entry = entries[i];
-    oss << "  " << i << ": " << cluster_status_to_string(entries[i].status) << " " << entry.next_cluster << '\n';
+    oss << "  " << i << ": " << cluster_status_to_string(entries[i].status) << " " << entry.next_cluster << '\t';
+
+    clusters_count++;
+    if (clusters_count % CLUSTERS_PER_LINE == 0) { oss << '\n'; }
   }
 
   return oss.str();
