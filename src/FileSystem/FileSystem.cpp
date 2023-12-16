@@ -127,6 +127,7 @@ auto FileSystem::rm(std::string const &path, bool recursive) -> void {
 }
 
 auto FileSystem::import_file(std::istream &in_stream, std::string const &path) -> void {
+  if (does_dir_exist(path)) throw std::invalid_argument("Cannot import nameless file to directory");
   if (does_file_exist(path)) throw std::invalid_argument("File already exists");
 
   touch(path);

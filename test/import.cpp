@@ -64,6 +64,21 @@ TEST_F(ImportTest, AlreadyExists) {
   file_to_import.close();
 }
 
+TEST_F(ImportTest, ImportToDir) {
+  const auto *const file_name = "test.txt";
+  const auto *const file_content =
+      "Hello World! This is some sample text. It is not very long, but it is long enough to test the file system.";
+
+  std::ofstream file(file_name);
+  file << file_content;
+  file.close();
+
+  file_system_.mkdir("dir");
+  std::ifstream file_to_import("test.txt");
+  EXPECT_THROW(file_system_.import_file(file_to_import, "dir"), std::invalid_argument);
+  file_to_import.close();
+}
+
 TEST_F(ImportTest, ImportShortRealFile) {
   const auto *const host_fs_file_path = "../test/assets/short_sample.txt";
 
