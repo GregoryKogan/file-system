@@ -40,4 +40,5 @@ private:
   auto touch(std::vector<std::string> args) -> void;
   auto rmdir(std::vector<std::string> args) -> void;
   auto rm(std::vector<std::string> args) -> void;
+  auto import_file(std::vector<std::string> args) -> void;
 };
