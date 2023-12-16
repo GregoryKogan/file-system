@@ -9,23 +9,22 @@ Simple implementation of FAT file system
 
 ### Commands
 
-- `help` - show help message
+- `help` - show this message
 - `exit` - exit the program
 - `clear` - clear the screen
 - `fsinfo` - show file system info
 - `dirname <path>` - get the directory portion of a pathname
 - `basename <path>` - get the filename portion of a pathname
+- `pwd` - print current working directory
 - `ls [-l]` - list directory contents
-- `mkdir <path>` - create a directory
-- `cd <path>` - change working directory
-- `pwd` - print working directory
-- `touch <path>` - create a file
+- `stat <path>` - print file metadata
 - `cat <path>` - print file contents
-- `rm <path>` - remove a file or directory
+- `mkdir <path>` - create a directory
+- `cd <path>` - change the working directory
+- `touch <path>` - create a file
 - `rmdir <path>` - remove a directory
-- `mv <path> <path>` - move a file or directory
-- `cp <path> <path>` - copy a file or directory
-- `import <path> <path>` - import a file or directory from host file system
-- `export <path> <path>` - export a file or directory to host file system
-- `stat <path>` - show file or directory info
-- `find <path> <name>` - find a file or directory by name
+- `rm [-r] <path>` - remove directory entries
+- `cp [-r] <source> <destination>` - copy files and directories
+- `mv [-r] <source> <destination>` - move files and directories
+- `import <host_path> <fs_path>` - import a file from the host file system
+- `export <fs_path> <host_path>` - export a file to the host file system
