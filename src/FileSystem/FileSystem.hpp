@@ -52,6 +52,7 @@ public:
   auto rmdir(std::string const &path) -> void;
   auto rm(std::string const &path, bool recursive = false) -> void;
   auto cp(std::string const &source, std::string const &destination, bool recursive = false) -> void;
+  auto mv(std::string const &source, std::string const &destination, bool recursive = false) -> void;
   auto import_file(std::istream &in_stream, std::string const &path) -> void;
   auto export_file(std::string const &path, std::ostream &out_stream) const -> void;
 

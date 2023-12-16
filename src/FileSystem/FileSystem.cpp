@@ -157,6 +157,11 @@ auto FileSystem::cp(std::string const &source, std::string const &destination, b
   }
 }
 
+auto FileSystem::mv(std::string const &source, std::string const &destination, bool recursive) -> void {
+  cp(source, destination, recursive);
+  rm(source, recursive);
+}
+
 auto FileSystem::import_file(std::istream &in_stream, std::string const &path) -> void {
   if (does_dir_exist(path)) throw std::invalid_argument("Cannot import nameless file to directory");
   if (does_file_exist(path)) throw std::invalid_argument("File already exists");
