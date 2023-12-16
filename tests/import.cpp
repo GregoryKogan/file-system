@@ -86,7 +86,6 @@ TEST_F(ImportTest, ImportShortRealFile) {
   file_system_.cat("sample.txt", oss);
 
   EXPECT_EQ(host_fs_file_content, oss.str());
-  EXPECT_EQ(oss.str(), "Good news! Import works!");
   host_fs_file.close();
 }
 
