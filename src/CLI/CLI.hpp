@@ -34,6 +34,7 @@ private:
   auto basename(std::vector<std::string> args) -> void;
   auto pwd() -> void;
   auto ls(std::vector<std::string> args) -> void;
+  auto stat(std::vector<std::string> args) -> void;
   auto cat(std::vector<std::string> args) -> void;
   auto mkdir(std::vector<std::string> args) -> void;
   auto cd(std::vector<std::string> args) -> void;
