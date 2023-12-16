@@ -68,6 +68,8 @@ auto CLI::execute(std::string const &command, std::vector<std::string> args) -> 
     rm(std::move(args));
   } else if (command == "import") {
     import_file(std::move(args));
+  } else if (command == "export") {
+    export_file(std::move(args));
   } else {
     std::cout << "Unknown command. Type 'help' to see available commands.\n";
   }
@@ -90,6 +92,7 @@ auto CLI::help() -> void {
   std::cout << "-\t'rmdir <path>' - remove a directory\n";
   std::cout << "-\t'rm [-r] <path>' - remove directory entries\n";
   std::cout << "-\t'import <host_path> <fs_path>' - import a file from the host file system\n";
+  std::cout << "-\t'export <fs_path> <host_path>' - export a file to the host file system\n";
 }
 
 auto CLI::clear() -> void {
@@ -241,4 +244,26 @@ auto CLI::import_file(std::vector<std::string> args) -> void {
 
   file_system_.import_file(in_stream, args[1]);
   in_stream.close();
+}
+
+auto CLI::export_file(std::vector<std::string> args) -> void {
+  if (args.size() != 2) {
+    std::cout << "Wrong number of arguments. Usage: export <fs_path> <host_path>\n";
+    return;
+  }
+
+  std::ofstream out_stream(args[1], std::ios::binary);
+  if (!out_stream.is_open()) {
+    std::cout << "Error while opening the file\n";
+    return;
+  }
+
+  try {
+    file_system_.export_file(args[0], out_stream);
+    out_stream.close();
+  } catch (const std::exception &e) {
+    out_stream.close();
+    std::remove(args[1].c_str());
+    throw;
+  }
 }
