@@ -1,7 +1,7 @@
 #include "CLI.hpp"
 
 CLI::CLI() {
-  const uint64_t SIZE = 1024;
+  const uint64_t SIZE = 32768;
   const uint64_t CLUSTER_SIZE = 64;
 
   FileSystem::make("cli.fs", {SIZE, CLUSTER_SIZE});
@@ -66,6 +66,8 @@ auto CLI::execute(std::string const &command, std::vector<std::string> args) -> 
     rmdir(std::move(args));
   } else if (command == "rm") {
     rm(std::move(args));
+  } else if (command == "cp") {
+    cp(std::move(args));
   } else if (command == "import") {
     import_file(std::move(args));
   } else if (command == "export") {
@@ -91,6 +93,7 @@ auto CLI::help() -> void {
   std::cout << "-\t'touch <path>' - create a file\n";
   std::cout << "-\t'rmdir <path>' - remove a directory\n";
   std::cout << "-\t'rm [-r] <path>' - remove directory entries\n";
+  std::cout << "-\t'cp [-r] <source> <destination>' - copy files and directories\n";
   std::cout << "-\t'import <host_path> <fs_path>' - import a file from the host file system\n";
   std::cout << "-\t'export <fs_path> <host_path>' - export a file to the host file system\n";
 }
@@ -228,6 +231,33 @@ auto CLI::rm(std::vector<std::string> args) -> void {
   }
 
   file_system_.rm(path, recursive);
+}
+
+auto CLI::cp(std::vector<std::string> args) -> void {
+  if (args.size() != 2 && args.size() != 3) {
+    std::cout << "Wrong number of arguments. Usage: cp [-r] <source> <destination>\n";
+    return;
+  }
+
+  bool recursive = false;
+  std::string source;
+  std::string destination;
+
+  if (args.size() == 2) {
+    source = args[0];
+    destination = args[1];
+  } else if (args.size() == 3) {
+    if (args[0] == "-r") {
+      recursive = true;
+      source = args[1];
+      destination = args[2];
+    } else {
+      std::cout << "Wrong arguments. Usage: cp [-r] <source> <destination>\n";
+      return;
+    }
+  }
+
+  file_system_.cp(source, destination, recursive);
 }
 
 auto CLI::import_file(std::vector<std::string> args) -> void {
