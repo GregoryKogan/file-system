@@ -126,6 +126,37 @@ auto FileSystem::rm(std::string const &path, bool recursive) -> void {
   rmfile(path);
 }
 
+auto FileSystem::cp(std::string const &source, std::string const &destination, bool recursive) -> void {
+  if (!does_exist(source)) throw std::invalid_argument("Source does not exist");
+  if (does_exist(destination)) throw std::invalid_argument("Destination already exists");
+
+  if (!recursive) {
+    shallow_copy(source, destination);
+    return;
+  }
+
+  auto source_cluster = search(source);
+  if (!source_cluster.has_value()) throw std::invalid_argument("Source does not exist");
+
+  auto source_meta = handler_builder_.build_metadata_handler(source_cluster.value()).read_metadata();
+  if (!source_meta.is_directory() || read_dir(source_cluster.value()).list_files().empty()) {
+    shallow_copy(source, destination);
+    return;
+  }
+
+  mkdir(destination);
+  auto destination_cluster = search(destination);
+  if (!destination_cluster.has_value()) throw std::invalid_argument("Destination does not exist");
+
+  auto source_dir = read_dir(source_cluster.value());
+  auto child_clusters = source_dir.list_files();
+  for (auto const &child_cluster : child_clusters) {
+    auto child_meta = handler_builder_.build_metadata_handler(child_cluster).read_metadata();
+    auto child_destination = path_resolver_.trace(destination_cluster.value()) + "/" + child_meta.get_name();
+    cp(path_resolver_.trace(child_cluster), child_destination, true);
+  }
+}
+
 auto FileSystem::import_file(std::istream &in_stream, std::string const &path) -> void {
   if (does_dir_exist(path)) throw std::invalid_argument("Cannot import nameless file to directory");
   if (does_file_exist(path)) throw std::invalid_argument("File already exists");
@@ -310,6 +341,37 @@ auto FileSystem::rmfile(std::string const &path) -> void {
 
   fat_.free(file_cluster.value());
   remove_file_from_dir(parent_dir_cluster, file_cluster.value());
+}
+
+auto FileSystem::shallow_copy(std::string const &source, std::string const &destination) -> void {
+  auto source_cluster = search(source);
+  if (!source_cluster.has_value()) throw std::invalid_argument("Source does not exist");
+
+  auto source_meta = handler_builder_.build_metadata_handler(source_cluster.value()).read_metadata();
+  if (source_meta.is_directory() && !read_dir(source_cluster.value()).list_files().empty()) {
+    throw std::invalid_argument("Cannot copy non-empty directory");
+  }
+
+  if (source_meta.is_directory()) {
+    mkdir(destination);
+    return;
+  }
+
+  touch(destination);
+  auto source_reader = handler_builder_.build_file_reader(source_cluster.value());
+  auto destination_cluster = search(destination);
+  if (!destination_cluster.has_value()) throw std::invalid_argument("Destination does not exist");
+  auto destination_writer = handler_builder_.build_file_writer(destination_cluster.value());
+
+  source_reader.set_block_size(settings_.cluster_size);
+  source_reader.set_offset(0);
+  destination_writer.set_offset(0);
+
+  auto buffer = source_reader.read_next();
+  while (!buffer.empty()) {
+    destination_writer.write_next(buffer);
+    buffer = source_reader.read_next();
+  }
 }
 
 auto operator<<(std::ostream &out_stream, FileSystem const &file_system) -> std::ostream & {

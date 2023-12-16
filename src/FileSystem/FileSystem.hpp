@@ -51,6 +51,7 @@ public:
   auto touch(std::string const &path) -> void;
   auto rmdir(std::string const &path) -> void;
   auto rm(std::string const &path, bool recursive = false) -> void;
+  auto cp(std::string const &source, std::string const &destination, bool recursive = false) -> void;
   auto import_file(std::istream &in_stream, std::string const &path) -> void;
   auto export_file(std::string const &path, std::ostream &out_stream) const -> void;
 
@@ -73,4 +74,5 @@ private:
   auto overwrite_file(std::uint64_t cluster, Metadata old_meta, std::vector<std::byte> const &bytes) -> void;
   auto rmfile(std::string const &path) -> void;
   auto rm_recursive(std::string const &path) -> void;
+  auto shallow_copy(std::string const &source, std::string const &destination) -> void;
 };
