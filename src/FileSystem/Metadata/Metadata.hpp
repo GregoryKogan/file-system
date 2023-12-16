@@ -40,4 +40,8 @@ public:
   [[nodiscard]] static auto get_metadata_size() noexcept -> std::uint64_t;
 
   [[nodiscard]] auto static to_string(Metadata const &metadata, bool verbose = false) -> std::string;
+
+private:
+  static auto to_string_verbose(Metadata const &metadata) -> std::string;
+  static auto to_string_not_verbose(Metadata const &metadata) -> std::string;
 };

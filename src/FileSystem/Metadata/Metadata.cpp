@@ -84,6 +84,28 @@ auto Metadata::get_metadata_size() noexcept -> std::uint64_t {
 }
 
 auto Metadata::to_string(Metadata const &metadata, bool verbose) -> std::string {
+  if (verbose) { return to_string_verbose(metadata); }
+  return to_string_not_verbose(metadata);
+}
+
+auto Metadata::to_string_verbose(Metadata const &metadata) -> std::string {
+  std::ostringstream oss;
+
+  if (metadata.is_directory()) {
+    oss << "Directory";
+  } else {
+    oss << "File";
+  }
+
+  oss << " '" << metadata.get_name() << "'";
+  oss << ", size: " << metadata.get_size() << " bytes";
+  oss << ", cluster: " << metadata.get_first_cluster();
+  oss << ", parent cluster: " << metadata.get_parent_first_cluster();
+
+  return oss.str();
+}
+
+auto Metadata::to_string_not_verbose(Metadata const &metadata) -> std::string {
   std::ostringstream oss;
 
   if (metadata.is_directory()) {
@@ -91,13 +113,8 @@ auto Metadata::to_string(Metadata const &metadata, bool verbose) -> std::string 
   } else {
     oss << "F";
   }
-  oss << " " << metadata.get_name();
 
-  if (verbose) {
-    oss << ", " << metadata.get_size() << "b";
-    oss << ", fc: " << metadata.get_first_cluster();
-    oss << ", pfc: " << metadata.get_parent_first_cluster();
-  }
+  oss << " " << metadata.get_name();
 
   return oss.str();
 }
