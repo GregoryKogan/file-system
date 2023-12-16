@@ -2,7 +2,7 @@
 
 CLI::CLI() {
   const uint64_t SIZE = 32768;
-  const uint64_t CLUSTER_SIZE = 64;
+  const uint64_t CLUSTER_SIZE = 128;
 
   FileSystem::make("cli.fs", {SIZE, CLUSTER_SIZE});
   file_system_ = FileSystem("cli.fs");

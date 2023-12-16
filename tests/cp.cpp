@@ -7,7 +7,7 @@ protected:
   // NOLINTBEGIN(cppcoreguidelines-non-private-member-variables-in-classes)
   std::string const PATH = "test.fs";
   std::uint64_t const SIZE = 131072;
-  std::uint64_t const CLUSTER_SIZE = 64;
+  std::uint64_t const CLUSTER_SIZE = 256;
 
   FileSystem file_system_;
   // NOLINTEND(cppcoreguidelines-non-private-member-variables-in-classes)
