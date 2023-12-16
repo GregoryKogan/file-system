@@ -8,7 +8,7 @@ CLI::CLI() {
   file_system_ = FileSystem("cli.fs");
 }
 
-CLI::~CLI() { std::remove("cli.fs"); }
+CLI::~CLI() { std::filesystem::remove("cli.fs"); }
 
 auto CLI::run() -> void {
   std::cout << "Welcome to the File System!\n";
