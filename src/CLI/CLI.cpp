@@ -1,8 +1,8 @@
 #include "CLI.hpp"
 
 CLI::CLI() {
-  const uint64_t SIZE = 32768;
-  const uint64_t CLUSTER_SIZE = 128;
+  const auto SIZE = static_cast<std::uint64_t>(64 * 1024 * 1024); // 64 MB
+  const std::uint64_t CLUSTER_SIZE = 256;
 
   FileSystem::make("cli.fs", {SIZE, CLUSTER_SIZE});
   file_system_ = FileSystem("cli.fs");
