@@ -29,7 +29,7 @@ protected:
 };
 
 TEST_F(FATTest, EntriesCount) {
-  EXPECT_EQ(fat_.entries_count(), FSMaker::calculate_fat_entries_count({SIZE, CLUSTER_SIZE}));
+  EXPECT_EQ(fat_.get_clusters_count(), FSMaker::calculate_fat_entries_count({SIZE, CLUSTER_SIZE}));
 }
 
 TEST_F(FATTest, Allocate) {
@@ -63,6 +63,6 @@ TEST_F(FATTest, AllocateTooMany) {
 }
 
 TEST_F(FATTest, EmptyEntryBytes) {
-  auto const empty_entry_bytes = FAT::empty_entry_bytes();
-  EXPECT_EQ(empty_entry_bytes.size(), FAT::entry_size());
+  auto const empty_entry_bytes = FAT::get_empty_entry_bytes();
+  EXPECT_EQ(empty_entry_bytes.size(), FAT::get_entry_size());
 }

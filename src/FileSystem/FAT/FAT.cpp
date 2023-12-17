@@ -6,9 +6,17 @@ FAT::FAT(DiskReader disk_reader_, DiskWriter disk_writer_, std::uint64_t offset,
     : entries_count_(entries_count), disk_offset_(offset), disk_reader_(std::move(disk_reader_)),
       disk_writer_(std::move(disk_writer_)) {}
 
-auto FAT::entries_count() const noexcept -> std::uint64_t { return entries_count_; }
+auto FAT::get_clusters_count() const noexcept -> std::uint64_t { return entries_count_; }
 
-auto FAT::entries() -> std::vector<FATEntry> {
+auto FAT::get_allocated_clusters_count() -> std::uint64_t {
+  std::uint64_t allocated_clusters_count = 0;
+  for (std::uint64_t i = 0; i < entries_count_; ++i) {
+    if (is_allocated(i)) allocated_clusters_count++;
+  }
+  return allocated_clusters_count;
+}
+
+auto FAT::get_entries() -> std::vector<FATEntry> {
   if (entries_count_ > MAX_ENTRIES_TO_LOAD) throw std::runtime_error("Too many FAT entries to load");
 
   disk_reader_.set_offset(disk_offset_);
@@ -151,32 +159,42 @@ auto FAT::to_bytes(FATEntry const &entry) -> std::vector<std::byte> {
   return bytes;
 }
 
-auto FAT::empty_entry_bytes() -> std::vector<std::byte> {
+auto FAT::get_empty_entry_bytes() -> std::vector<std::byte> {
   std::vector<std::byte> bytes(ENTRY_SIZE, std::byte{0});
   bytes[0] = ClusterStatusOptions::FREE;
   return bytes;
 }
 
-auto FAT::entry_size() -> std::uint64_t { return ENTRY_SIZE; }
+auto FAT::get_entry_size() -> std::uint64_t { return ENTRY_SIZE; }
 
 auto FAT::to_string(FAT const &fat) -> std::string {
-  auto fat_copy = fat;
-  auto entries = fat_copy.entries();
-
   std::ostringstream oss;
 
-  oss << "FAT entries count: " << entries.size() << '\n';
+  auto fat_copy = fat;
+
+  auto const clusters_count = fat_copy.get_clusters_count();
+  oss << "Clusters count: " << clusters_count << '\n';
+  auto const allocated_clusters_count = fat_copy.get_allocated_clusters_count();
+  auto const PERCENTS = 100;
+  oss << "Allocated clusters count: " << allocated_clusters_count << " ("
+      << (allocated_clusters_count * PERCENTS) / clusters_count << "%)" << '\n';
+  if (clusters_count > MAX_ENTRIES_TO_LOAD) {
+    oss << "Too many clusters to load";
+    return oss.str();
+  }
+
   oss << "FAT entries:" << '\n';
+  auto entries = fat_copy.get_entries();
 
   const int CLUSTERS_PER_LINE = 4; // Number of clusters to display per line
 
-  int clusters_count = 0;
+  int cluster_counter = 0;
   for (std::size_t i = 0; i < entries.size(); ++i) {
     auto entry = entries[i];
     oss << "  " << i << ": " << cluster_status_to_string(entries[i].status) << " " << entry.next_cluster << '\t';
 
-    clusters_count++;
-    if (clusters_count % CLUSTERS_PER_LINE == 0) { oss << '\n'; }
+    cluster_counter++;
+    if (cluster_counter % CLUSTERS_PER_LINE == 0) { oss << '\n'; }
   }
 
   return oss.str();

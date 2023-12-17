@@ -24,7 +24,8 @@ public:
   FAT();
   FAT(DiskReader disk_reader_, DiskWriter disk_writer_, std::uint64_t offset, std::uint64_t entries_count);
 
-  [[nodiscard]] auto entries_count() const noexcept -> std::uint64_t;
+  [[nodiscard]] auto get_clusters_count() const noexcept -> std::uint64_t;
+  [[nodiscard]] auto get_allocated_clusters_count() -> std::uint64_t;
 
   [[nodiscard]] auto allocate() -> std::uint64_t;
   [[nodiscard]] auto allocate_next(std::uint64_t cluster_index) -> std::uint64_t;
@@ -35,12 +36,12 @@ public:
   [[nodiscard]] auto is_last(std::uint64_t cluster_index) -> bool;
   [[nodiscard]] auto is_allocated(std::uint64_t cluster_index) -> bool;
 
-  static auto empty_entry_bytes() -> std::vector<std::byte>;
-  static auto entry_size() -> std::uint64_t;
+  static auto get_empty_entry_bytes() -> std::vector<std::byte>;
+  static auto get_entry_size() -> std::uint64_t;
   static auto to_string(FAT const &fat) -> std::string;
 
 private:
-  [[nodiscard]] auto entries() -> std::vector<FATEntry>;
+  [[nodiscard]] auto get_entries() -> std::vector<FATEntry>;
   [[nodiscard]] auto get_entry(std::uint64_t cluster_index) -> FATEntry;
   auto set_entry(std::uint64_t cluster_index, FATEntry const &entry) -> void;
 

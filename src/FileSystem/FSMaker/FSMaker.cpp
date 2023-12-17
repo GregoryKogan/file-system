@@ -63,13 +63,13 @@ auto FSMaker::write_fat(DiskWriter &writer, Settings const &settings) -> void {
   writer.set_offset(FAT_OFFSET);
 
   auto entries_count = calculate_fat_entries_count(settings);
-  for (std::uint64_t i = 0; i < entries_count; ++i) { writer.write_next(FAT::empty_entry_bytes()); }
+  for (std::uint64_t i = 0; i < entries_count; ++i) { writer.write_next(FAT::get_empty_entry_bytes()); }
 }
 
 auto FSMaker::calculate_fat_entries_count(Settings const &settings) -> std::uint64_t {
-  return (settings.size - SETTINGS_SIZE) / (FAT::entry_size() + settings.cluster_size);
+  return (settings.size - SETTINGS_SIZE) / (FAT::get_entry_size() + settings.cluster_size);
 }
 
 auto FSMaker::calculate_clusters_start_offset(Settings const &settings) -> std::uint64_t {
-  return get_fat_offset() + calculate_fat_entries_count(settings) * FAT::entry_size();
+  return get_fat_offset() + calculate_fat_entries_count(settings) * FAT::get_entry_size();
 }
