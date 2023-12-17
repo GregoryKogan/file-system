@@ -29,6 +29,9 @@ private:
   static auto help() -> void;
   static auto clear() -> void;
 
+  static auto makefs(std::vector<std::string> args) -> void;
+  auto openfs(std::vector<std::string> args) -> void;
+
   auto fsinfo() -> void;
   auto dirname(std::vector<std::string> args) -> void;
   auto basename(std::vector<std::string> args) -> void;

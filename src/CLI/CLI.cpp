@@ -44,6 +44,10 @@ auto CLI::execute(std::string const &command, std::vector<std::string> args) -> 
     help();
   } else if (command == "clear") {
     clear();
+  } else if (command == "makefs") {
+    makefs(std::move(args));
+  } else if (command == "openfs") {
+    openfs(std::move(args));
   } else if (command == "fsinfo") {
     fsinfo();
   } else if (command == "dirname") {
@@ -86,6 +90,10 @@ auto CLI::help() -> void {
   std::cout << "-\t'help' - show this message\n";
   std::cout << "-\t'exit' - exit the program\n";
   std::cout << "-\t'clear' - clear the screen\n";
+  std::cout << '\n';
+  std::cout << "-\t'makefs <path> <size> <cluster_size>' - create a new file system\n";
+  std::cout << "-\t'openfs <path>' - open an existing file system\n";
+  std::cout << '\n';
   std::cout << "-\t'fsinfo' - show file system info\n";
   std::cout << "-\t'dirname <path>' - get the directory portion of a pathname\n";
   std::cout << "-\t'basename <path>' - get the filename portion of a pathname\n";
@@ -111,6 +119,28 @@ auto CLI::clear() -> void {
   // Assume POSIX
   if (std::system("clear") != 0) { std::cout << "Error while clearing the screen\n"; }
 #endif
+}
+
+auto CLI::makefs(std::vector<std::string> args) -> void {
+  if (args.size() != 3) {
+    std::cout << "Wrong number of arguments. Usage: makefs <path> <size> <cluster_size>\n";
+    return;
+  }
+
+  std::string path = args[0];
+  std::uint64_t size = std::stoull(args[1]);
+  std::uint64_t cluster_size = std::stoull(args[2]);
+
+  FileSystem::make(path, {size, cluster_size});
+}
+
+auto CLI::openfs(std::vector<std::string> args) -> void {
+  if (args.size() != 1) {
+    std::cout << "Wrong number of arguments. Usage: openfs <path>\n";
+    return;
+  }
+
+  file_system_ = FileSystem(args[0]);
 }
 
 auto CLI::fsinfo() -> void { std::cout << file_system_ << '\n'; }
