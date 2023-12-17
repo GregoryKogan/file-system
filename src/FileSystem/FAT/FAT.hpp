@@ -12,7 +12,7 @@ class FAT {
   static const std::uint64_t STATUS_SIZE = 1;
   static const std::uint64_t NEXT_CLUSTER_SIZE = 8;
   static const std::uint64_t ENTRY_SIZE = STATUS_SIZE + NEXT_CLUSTER_SIZE;
-  static const std::uint64_t MAX_ENTRIES_TO_LOAD = 1000000;
+  static const std::uint64_t MAX_ENTRIES_TO_LOAD = 1000;
 
   std::uint64_t entries_count_;
   std::uint64_t disk_offset_;
