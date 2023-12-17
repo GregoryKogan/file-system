@@ -18,6 +18,10 @@ auto FSMaker::get_fat_offset() -> std::uint64_t { return FAT_OFFSET; }
 
 auto FSMaker::get_settings_offset() -> std::uint64_t { return SETTINGS_OFFSET; }
 
+auto FSMaker::get_signature() -> std::string { return {SIGNATURE}; }
+
+auto FSMaker::get_signature_size() -> std::uint64_t { return SIGNATURE_SIZE; }
+
 auto FSMaker::validate_settings(Settings const &settings, bool allow_big) -> void {
   if (settings.size < MIN_FS_SIZE) {
     throw std::runtime_error("File system size must be greater than " + std::to_string(MIN_FS_SIZE) + " bytes");

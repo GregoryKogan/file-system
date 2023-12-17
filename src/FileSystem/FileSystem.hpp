@@ -60,6 +60,7 @@ public:
   friend auto operator<<(std::ostream &out_stream, FileSystem const &file_system) -> std::ostream &;
 
 private:
+  [[nodiscard]] auto check_signature() -> bool;
   auto read_settings() -> void;
   [[nodiscard]] auto is_root_dir_created() noexcept -> bool;
   auto create_root_dir() -> void;

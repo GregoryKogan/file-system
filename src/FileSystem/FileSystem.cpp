@@ -8,6 +8,7 @@ FileSystem::FileSystem(std::string const &path) {
   disk_reader_ = DiskReader(std::move(ifs), 0, 0);
   disk_writer_ = DiskWriter(std::move(ofs), 0);
 
+  if (!check_signature()) throw std::runtime_error("Specified file is not a file system");
   read_settings();
 
   fat_ = FAT(disk_reader_, disk_writer_, FSMaker::get_fat_offset(), FSMaker::calculate_fat_entries_count(settings_));
@@ -252,6 +253,13 @@ auto FileSystem::cat(std::string const &path, std::ostream &out_stream) const ->
     out_stream << Converter::to_string(file_bytes);
     file_bytes = file_reader.read_next();
   }
+}
+
+auto FileSystem::check_signature() -> bool {
+  disk_reader_.set_offset(0);
+  disk_reader_.set_block_size(FSMaker::get_signature_size());
+  auto signature_bytes = disk_reader_.read();
+  return Converter::to_string(signature_bytes) == FSMaker::get_signature();
 }
 
 auto FileSystem::read_settings() -> void {

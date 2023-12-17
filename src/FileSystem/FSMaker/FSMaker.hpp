@@ -29,6 +29,8 @@ public:
   static auto make_fs(std::string const &path, Settings const &settings, bool allow_big = false) -> void;
   static auto get_fat_offset() -> std::uint64_t;
   static auto get_settings_offset() -> std::uint64_t;
+  static auto get_signature() -> std::string;
+  static auto get_signature_size() -> std::uint64_t;
   static auto calculate_fat_entries_count(Settings const &settings) -> std::uint64_t;
   static auto calculate_clusters_start_offset(Settings const &settings) -> std::uint64_t;
 
