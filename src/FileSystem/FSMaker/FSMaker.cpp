@@ -9,11 +9,14 @@ auto FSMaker::make_fs(std::string const &path, Settings const &settings, bool al
   DiskWriter writer(std::move(ofs), 0);
 
   fill_zeros(writer, settings.size);
+  write_signature(writer);
   write_settings(writer, settings);
   write_fat(writer, settings);
 }
 
 auto FSMaker::get_fat_offset() -> std::uint64_t { return FAT_OFFSET; }
+
+auto FSMaker::get_settings_offset() -> std::uint64_t { return SETTINGS_OFFSET; }
 
 auto FSMaker::validate_settings(Settings const &settings, bool allow_big) -> void {
   if (settings.size < MIN_FS_SIZE) {
@@ -37,6 +40,11 @@ auto FSMaker::validate_settings(Settings const &settings, bool allow_big) -> voi
   }
 }
 
+auto FSMaker::write_signature(DiskWriter &writer) -> void {
+  writer.set_offset(0);
+  writer.write(Converter::to_bytes(std::string(SIGNATURE), SIGNATURE_SIZE));
+}
+
 auto FSMaker::fill_zeros(DiskWriter &writer, std::uint64_t size) -> void {
   writer.set_offset(0);
 
@@ -50,7 +58,7 @@ auto FSMaker::fill_zeros(DiskWriter &writer, std::uint64_t size) -> void {
 }
 
 auto FSMaker::write_settings(DiskWriter &writer, Settings const &settings) -> void {
-  writer.set_offset(0);
+  writer.set_offset(SETTINGS_OFFSET);
 
   auto size_bytes = Converter::to_bytes(settings.size);
   writer.write_next(size_bytes);

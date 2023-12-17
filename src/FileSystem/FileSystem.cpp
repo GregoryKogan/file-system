@@ -255,7 +255,7 @@ auto FileSystem::cat(std::string const &path, std::ostream &out_stream) const ->
 }
 
 auto FileSystem::read_settings() -> void {
-  disk_reader_.set_offset(0);
+  disk_reader_.set_offset(FSMaker::get_settings_offset());
   disk_reader_.set_block_size(Converter::get_uint64_size());
 
   auto size_bytes = disk_reader_.read_next();
