@@ -1,6 +1,8 @@
 # file-system
 
-![GitHub Workflow Status (with event)](https://img.shields.io/github/actions/workflow/status/GregoryKogan/file-system/cmake-multi-platform.yml)
+![GitHub License](https://img.shields.io/github/license/GregoryKogan/file-system)
+
+![GitHub Workflow Status (with event)](https://img.shields.io/github/actions/workflow/status/GregoryKogan/file-system/cmake-multi-platform.yml?logo=github&label=tests)
 ![](https://tokei.ekzhang.com/b1/github/GregoryKogan/file-system)
 
 Simple implementation of FAT file system
