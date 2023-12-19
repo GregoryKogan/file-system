@@ -14,7 +14,11 @@ Simple implementation of FAT file system
 - `help` - show this message
 - `exit` - exit the program
 - `clear` - clear the screen
+  <br /><br />
+- `makefs <path> <size> <cluster_size>` - create a new file system
+- `openfs <path>` - open an existing file system
 - `fsinfo` - show file system info
+  <br /><br />
 - `dirname <path>` - get the directory portion of a pathname
 - `basename <path>` - get the filename portion of a pathname
 - `pwd` - print current working directory
@@ -28,5 +32,6 @@ Simple implementation of FAT file system
 - `rm [-r] <path>` - remove directory entries
 - `cp [-r] <source> <destination>` - copy files and directories
 - `mv [-r] <source> <destination>` - move files and directories
+  <br /><br />
 - `import <host_path> <fs_path>` - import a file from the host file system
 - `export <fs_path> <host_path>` - export a file to the host file system

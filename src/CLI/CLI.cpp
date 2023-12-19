@@ -93,8 +93,8 @@ auto CLI::help() -> void {
   std::cout << '\n';
   std::cout << "-\t'makefs <path> <size> <cluster_size>' - create a new file system\n";
   std::cout << "-\t'openfs <path>' - open an existing file system\n";
-  std::cout << '\n';
   std::cout << "-\t'fsinfo' - show file system info\n";
+  std::cout << '\n';
   std::cout << "-\t'dirname <path>' - get the directory portion of a pathname\n";
   std::cout << "-\t'basename <path>' - get the filename portion of a pathname\n";
   std::cout << "-\t'pwd' - print current working directory\n";
