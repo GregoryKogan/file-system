@@ -78,4 +78,5 @@ private:
   auto rmfile(std::string const &path) -> void;
   auto rm_recursive(std::string const &path) -> void;
   auto shallow_copy(std::string const &source, std::string const &destination) -> void;
+  auto deep_copy(std::string const &source, std::string const &destination) -> void;
 };

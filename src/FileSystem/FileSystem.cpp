@@ -135,34 +135,12 @@ auto FileSystem::rm(std::string const &path, bool recursive) -> void {
 }
 
 auto FileSystem::cp(std::string const &source, std::string const &destination, bool recursive) -> void {
-  if (!does_exist(source)) throw std::invalid_argument("Source does not exist");
-  if (does_exist(destination)) throw std::invalid_argument("Destination already exists");
-
   if (!recursive) {
     shallow_copy(source, destination);
     return;
   }
 
-  auto source_cluster = search(source);
-  if (!source_cluster.has_value()) throw std::invalid_argument("Source does not exist");
-
-  auto source_meta = handler_builder_.build_metadata_handler(source_cluster.value()).read_metadata();
-  if (!source_meta.is_directory() || read_dir(source_cluster.value()).list_files().empty()) {
-    shallow_copy(source, destination);
-    return;
-  }
-
-  mkdir(destination);
-  auto destination_cluster = search(destination);
-  if (!destination_cluster.has_value()) throw std::invalid_argument("Destination does not exist");
-
-  auto source_dir = read_dir(source_cluster.value());
-  auto child_clusters = source_dir.list_files();
-  for (auto const &child_cluster : child_clusters) {
-    auto child_meta = handler_builder_.build_metadata_handler(child_cluster).read_metadata();
-    auto child_destination = path_resolver_.trace(destination_cluster.value()) + "/" + child_meta.get_name();
-    cp(path_resolver_.trace(child_cluster), child_destination, true);
-  }
+  deep_copy(source, destination);
 }
 
 auto FileSystem::mv(std::string const &source, std::string const &destination, bool recursive) -> void {
@@ -364,6 +342,8 @@ auto FileSystem::rmfile(std::string const &path) -> void {
 }
 
 auto FileSystem::shallow_copy(std::string const &source, std::string const &destination) -> void {
+  if (does_exist(destination)) throw std::invalid_argument("Destination already exists");
+
   auto source_cluster = search(source);
   if (!source_cluster.has_value()) throw std::invalid_argument("Source does not exist");
 
@@ -391,6 +371,32 @@ auto FileSystem::shallow_copy(std::string const &source, std::string const &dest
   while (!buffer.empty()) {
     destination_writer.write_next(buffer);
     buffer = source_reader.read_next();
+  }
+}
+
+auto FileSystem::deep_copy(std::string const &source, std::string const &destination) -> void {
+  if (!does_exist(source)) throw std::invalid_argument("Source does not exist");
+  if (does_exist(destination)) throw std::invalid_argument("Destination already exists");
+
+  auto source_cluster = search(source);
+  if (!source_cluster.has_value()) throw std::invalid_argument("Source does not exist");
+
+  auto source_meta = handler_builder_.build_metadata_handler(source_cluster.value()).read_metadata();
+  if (!source_meta.is_directory() || read_dir(source_cluster.value()).list_files().empty()) {
+    shallow_copy(source, destination);
+    return;
+  }
+
+  mkdir(destination);
+  auto destination_cluster = search(destination);
+  if (!destination_cluster.has_value()) throw std::invalid_argument("Destination does not exist");
+
+  auto source_dir = read_dir(source_cluster.value());
+  auto child_clusters = source_dir.list_files();
+  for (auto const &child_cluster : child_clusters) {
+    auto child_meta = handler_builder_.build_metadata_handler(child_cluster).read_metadata();
+    auto child_destination = path_resolver_.trace(destination_cluster.value()) + "/" + child_meta.get_name();
+    cp(path_resolver_.trace(child_cluster), child_destination, true);
   }
 }
 
