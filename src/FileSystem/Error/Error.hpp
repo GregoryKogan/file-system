@@ -1,32 +1,45 @@
 #pragma once
 
+#include <functional>
+#include <sstream>
 #include <string>
-#include <utility>
+#include <vector>
 
-struct Error {
-  virtual ~Error() = default;
-  Error() = default;
-  Error(const Error &) = default;
-  Error(Error &&) = default;
-  auto operator=(const Error &) -> Error & = delete;
-  auto operator=(Error &&) -> Error & = delete;
+class Error { // NOLINT (bugprone-exception-escape)
+  std::string message_;
+  std::function<std::string()> get_type_ = []() { return "Error"; };
+  std::vector<Error> trace_;
 
-  explicit Error(std::string in_message) : message(std::move(in_message)) {}
-  [[nodiscard]] auto get_error_type() const noexcept -> std::string { // NOLINT (bugprone-exception-escape)
-    return "Error";
+public:
+  explicit Error(std::string message) : message_(std::move(message)) {}
+  Error(std::string message, const std::function<std::string()> &get_type)
+      : message_(std::move(message)), get_type_(get_type) {}
+
+  [[nodiscard]] auto type() const -> std::string { return get_type_(); }
+  [[nodiscard]] auto what() const -> std::string { return type() + ": " + message_; }
+  [[nodiscard]] auto trace() const -> std::vector<Error> {
+    auto trace = trace_;
+    trace.push_back(*this);
+    return trace;
+  }
+  auto log(std::ostream &out_stream, bool verbose = true) const -> void {
+    if (verbose) {
+      for (auto const &error : trace()) { out_stream << "  " << error.what() << '\n'; }
+    } else {
+      out_stream << what() << '\n';
+    }
   }
 
-  [[nodiscard]] auto what() const noexcept -> std::string { return get_error_type() + ": " + message; }
-
-private:
-  std::string message;
+  auto wrap(const Error &error) -> Error & {
+    auto trace = error.trace();
+    trace.insert(std::end(trace), std::begin(trace_), std::end(trace_));
+    trace_ = trace;
+    return *this;
+  }
 };
 
-#define DEFINE_ERROR_TYPE(name) /* NOLINT (cppcoreguidelines-macro-usage) */                                           \
-  struct name##Err : public Error {                                                                                    \
-    explicit name##Err(std::string in_message) : Error(std::move(in_message)) {}                                       \
-    [[nodiscard]] auto get_error_type() const noexcept /* NOLINT (bugprone-exception-escape) */                        \
-        -> std::string {                                                                                               \
-      return #name;                                                                                                    \
-    }                                                                                                                  \
+#define DEFINE_ERROR(name) /* NOLINT (cppcoreguidelines-macro-usage) */                                                \
+  class name##Error : public Error {                                                                                   \
+  public:                                                                                                              \
+    explicit name##Error(std::string message) : Error(std::move(message), [] { return #name; }) {}                     \
   };
