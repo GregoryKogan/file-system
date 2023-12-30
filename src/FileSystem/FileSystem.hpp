@@ -10,6 +10,7 @@
 #include "FileHandler/HandlerBuilder/HandlerBuilder.hpp"
 #include "Metadata/Metadata.hpp"
 #include "PathResolver/PathResolver.hpp"
+#include <algorithm>
 #include <cstdint>
 #include <sstream>
 #include <string>
