@@ -22,12 +22,8 @@ public:
     trace.push_back(*this);
     return trace;
   }
-  auto log(std::ostream &out_stream, bool verbose = true) const -> void {
-    if (verbose) {
-      for (auto const &error : trace()) { out_stream << "  " << error.what() << '\n'; }
-    } else {
-      out_stream << what() << '\n';
-    }
+  auto log(std::ostream &out_stream) const -> void {
+    for (auto const &error : trace()) { out_stream << "  " << error.what() << '\n'; }
   }
 
   auto wrap(const Error &error) -> Error & {
