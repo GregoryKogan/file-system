@@ -7,6 +7,22 @@
 
 Simple implementation of FAT file system
 
+## Build
+```shell
+cmake -S . -B build && cmake --build build
+```
+CLI executable will be inside `build` directory.
+To run it execute:
+```shell
+./build/cli
+```
+
+## Test
+```shell
+cd build
+ctest
+```
+
 ## CLI
 
 ### Commands
