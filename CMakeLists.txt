@@ -24,14 +24,14 @@ add_executable(
 
 file(GLOB_RECURSE TESTS_SOURCES "tests/*.cpp")
 add_executable(
-  tests
+  unit_tests
   ${SOURCES}
   ${TESTS_SOURCES}
 )
-target_link_libraries(tests GTest::gtest_main)
+target_link_libraries(unit_tests GTest::gtest_main)
 
 include(GoogleTest)
-gtest_discover_tests(tests)
+gtest_discover_tests(unit_tests)
 
 
 if(CMAKE_BUILD_TYPE STREQUAL "Release")
@@ -43,11 +43,11 @@ if(CMAKE_BUILD_TYPE STREQUAL "Release")
 elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
   if(MSVC)
     target_compile_options(cli PRIVATE /W4 /WX)
-    target_compile_options(tests PRIVATE /W4 /WX)
+    target_compile_options(unit_tests PRIVATE /W4 /WX)
   else()
     target_compile_options(cli PRIVATE -Wall -Wextra -pedantic -Werror -g -fsanitize=address -fsanitize=undefined -fsanitize=unsigned-integer-overflow)
-    target_compile_options(tests PRIVATE -g -fsanitize=address -fsanitize=undefined -fsanitize=unsigned-integer-overflow)
+    target_compile_options(unit_tests PRIVATE -g -fsanitize=address -fsanitize=undefined -fsanitize=unsigned-integer-overflow)
     target_link_options(cli PRIVATE -fsanitize=address -fsanitize=undefined -fsanitize=unsigned-integer-overflow)
-    target_link_options(tests PRIVATE -fsanitize=address -fsanitize=undefined -fsanitize=unsigned-integer-overflow)
+    target_link_options(unit_tests PRIVATE -fsanitize=address -fsanitize=undefined -fsanitize=unsigned-integer-overflow)
   endif()
 endif()
